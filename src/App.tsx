@@ -55,6 +55,7 @@ function App() {
         <Route path="/content-pipeline" element={<Navigate to="/dashboard/content" replace />} />
         <Route path="/personal-/-calendar-&-travel" element={<Navigate to="/dashboard/personal" replace />} />
         <Route path="/research-knowledge-base" element={<Navigate to="/dashboard/research" replace />} />
+        <Route path="/research-&-knowledge-base" element={<Navigate to="/dashboard/research" replace />} />
 
         <Route
           path="/dashboard"

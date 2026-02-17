@@ -1,4 +1,5 @@
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback, useEffect, useMemo } from 'react'
+import { Link } from 'react-router-dom'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -10,6 +11,7 @@ import {
   CompareView,
   VectorSearchToggle,
 } from '@/components/research-knowledge-base'
+import { useResearchKnowledgeBases } from '@/hooks/useResearchKnowledgeBase'
 import { toast } from 'sonner'
 import type {
   Note,
@@ -17,9 +19,25 @@ import type {
   WebClip,
   SourceAttachment,
 } from '@/types/research-knowledge-base'
+import { ChevronRight } from 'lucide-react'
 
 function uuid() {
   return crypto.randomUUID?.() ?? `id-${Date.now()}-${Math.random().toString(36).slice(2)}`
+}
+
+function mapApiToNote(r: { id: string; user_id: string; title: string; description?: string; status: string; created_at: string; updated_at: string }): Note {
+  return {
+    id: r.id,
+    userId: r.user_id,
+    title: r.title,
+    content: r.description ?? '',
+    tags: [],
+    sourceAttachments: [],
+    citationMetadata: [],
+    createdAt: r.created_at,
+    updatedAt: r.updated_at,
+    status: r.status as 'active' | 'archived',
+  }
 }
 
 export function ResearchPage() {
@@ -30,10 +48,22 @@ export function ResearchPage() {
   const [compareLeft, setCompareLeft] = useState<{ id: string; title: string; content: string; meta?: string } | null>(null)
   const [compareRight, setCompareRight] = useState<{ id: string; title: string; content: string; meta?: string } | null>(null)
   const [vectorSearchEnabled, setVectorSearchEnabled] = useState(false)
-  const [isLoading] = useState(false)
 
+  const { data: apiList, isLoading: apiLoading, isError: apiError } = useResearchKnowledgeBases(undefined)
+
+  const mergedNotes = useMemo(() => {
+    if (apiError || !apiList?.length) return notes
+    const apiNotes = apiList.map(mapApiToNote)
+    const apiIds = new Set(apiNotes.map((n) => n.id))
+    const localOnly = notes.filter((n) => !apiIds.has(n.id))
+    return [...apiNotes, ...localOnly].sort(
+      (a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+    )
+  }, [apiList, apiError, notes])
+
+  const isLoading = apiLoading
   const selectedNote = selectedNoteId
-    ? notes.find((n) => n.id === selectedNoteId) ?? null
+    ? mergedNotes.find((n) => n.id === selectedNoteId) ?? null
     : null
 
   useEffect(() => {
@@ -63,20 +93,30 @@ export function ResearchPage() {
 
   const handleSaveNote = useCallback(
     (noteId: string, payload: { title: string; content: string; tags: string[] }) => {
-      setNotes((prev) =>
-        prev.map((n) =>
-          n.id !== noteId
-            ? n
-            : {
-                ...n,
-                ...payload,
-                updatedAt: new Date().toISOString(),
-              }
-        )
-      )
+      const existing = mergedNotes.find((n) => n.id === noteId)
+      const updated: Note = existing
+        ? { ...existing, ...payload, updatedAt: new Date().toISOString() }
+        : {
+            id: noteId,
+            userId: '',
+            title: payload.title,
+            content: payload.content,
+            tags: payload.tags,
+            sourceAttachments: [],
+            citationMetadata: [],
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            status: 'active',
+          }
+      setNotes((prev) => {
+        if (prev.some((n) => n.id === noteId)) {
+          return prev.map((n) => (n.id !== noteId ? n : updated))
+        }
+        return [updated, ...prev]
+      })
       toast.success('Note saved')
     },
-    []
+    [mergedNotes]
   )
 
   const handleAddSource = useCallback((noteId: string, url: string, title?: string) => {
@@ -113,6 +153,18 @@ export function ResearchPage() {
       )
     )
     toast.success('Source removed')
+  }, [])
+
+  const handleSaveSearch = useCallback((name: string, query: string, tags: string[]) => {
+    const saved: SavedSearch = {
+      id: uuid(),
+      name,
+      query,
+      filters: { tags: tags.length ? tags : undefined },
+      createdAt: new Date().toISOString(),
+    }
+    setSavedSearches((prev) => [saved, ...prev])
+    toast.success('Search saved')
   }, [])
 
   const handleSaveClip = useCallback(
@@ -182,35 +234,58 @@ export function ResearchPage() {
 
   return (
     <div className="space-y-6 animate-fade-in-up">
+      <nav aria-label="Breadcrumb" className="flex items-center gap-1 text-sm text-muted-foreground">
+        <Link
+          to="/dashboard"
+          className="transition-colors hover:text-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded"
+        >
+          Dashboard
+        </Link>
+        <ChevronRight className="h-4 w-4 shrink-0" aria-hidden />
+        <span className="text-foreground font-medium">Research & Knowledge Base</span>
+      </nav>
+
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-foreground md:text-3xl">
-            Research & Knowledge Base
-          </h1>
-          <p className="mt-1 text-muted-foreground">
-            Save web clips, notes, summaries, and decisions. Tagging, search, and AI summarization with citations.
-          </p>
+        <div className="relative">
+          <div className="absolute -inset-1 bg-gradient-to-r from-primary/10 via-transparent to-atlas-cyan/10 rounded-lg blur-sm" aria-hidden />
+          <div className="relative">
+            <h1 className="text-2xl font-bold tracking-tight text-foreground md:text-3xl">
+              Research & Knowledge Base
+            </h1>
+            <p className="mt-1 text-muted-foreground">
+              Save web clips, notes, summaries, and decisions. Tagging, search, and AI summarization with citations.
+            </p>
+          </div>
         </div>
       </div>
 
       <Tabs defaultValue="notes" className="w-full">
-        <TabsList className="flex flex-wrap h-auto gap-1 p-1 bg-card-secondary border border-border">
-          <TabsTrigger value="notes">Notes</TabsTrigger>
-          <TabsTrigger value="clipper">Web Clipper</TabsTrigger>
-          <TabsTrigger value="compare">Compare</TabsTrigger>
-          <TabsTrigger value="settings">Search</TabsTrigger>
+        <TabsList className="flex flex-wrap h-auto gap-1 p-1 bg-card-secondary border border-border rounded-lg">
+          <TabsTrigger value="notes" className="rounded-md transition-all duration-200 data-[state=active]:shadow-sm">
+            Notes
+          </TabsTrigger>
+          <TabsTrigger value="clipper" className="rounded-md transition-all duration-200 data-[state=active]:shadow-sm">
+            Web Clipper
+          </TabsTrigger>
+          <TabsTrigger value="compare" className="rounded-md transition-all duration-200 data-[state=active]:shadow-sm">
+            Compare
+          </TabsTrigger>
+          <TabsTrigger value="settings" className="rounded-md transition-all duration-200 data-[state=active]:shadow-sm">
+            Search
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="notes" className="mt-6">
           <div className="grid gap-6 lg:grid-cols-3">
             <div className="lg:col-span-1">
               <NotesList
-                notes={notes}
+                notes={mergedNotes}
                 savedSearches={savedSearches}
                 isLoading={isLoading}
                 selectedNoteId={selectedNoteId}
                 onSelectNote={setSelectedNoteId}
                 onNewNote={handleNewNote}
+                onSaveSearch={handleSaveSearch}
               />
             </div>
             <div className="lg:col-span-2 space-y-4">
