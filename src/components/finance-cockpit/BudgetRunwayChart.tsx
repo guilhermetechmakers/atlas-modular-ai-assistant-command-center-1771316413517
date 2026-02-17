@@ -53,11 +53,13 @@ export function BudgetRunwayChart({ transactions, isLoading = false }: BudgetRun
       else expenses += Math.abs(t.amount_cents)
     })
     const balance = income - expenses
-    const lastMonth = transactions.length
-      ? transactions
-          .filter((t) => t.amount_cents < 0)
-          .reduce((s, t) => s + Math.abs(t.amount_cents), 0) / 100
-    const runwayMonths = lastMonth > 0 ? balance / 100 / lastMonth : 0
+    const monthlyExpenses =
+      transactions.length > 0
+        ? transactions
+            .filter((t) => t.amount_cents < 0)
+            .reduce((s, t) => s + Math.abs(t.amount_cents), 0) / 100
+        : 0
+    const runwayMonths = monthlyExpenses > 0 ? balance / 100 / monthlyExpenses : 0
     return {
       income: income / 100,
       expenses: expenses / 100,

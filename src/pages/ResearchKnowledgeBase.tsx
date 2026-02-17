@@ -3,4 +3,8 @@
  * Rendered under /dashboard/research via DashboardLayout.
  * Route /research-&-knowledge-base and /research-knowledge-base redirect to /dashboard/research.
  */
-export { ResearchPage as default } from '@/pages/dashboard/Research'
+import { ResearchPage } from '@/pages/dashboard/Research'
+
+export default function ResearchKnowledgeBasePage() {
+  return <ResearchPage />
+}

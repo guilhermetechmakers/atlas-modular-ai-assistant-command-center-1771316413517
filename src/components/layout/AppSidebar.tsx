@@ -21,7 +21,7 @@ import { Button } from '@/components/ui/button'
 const navItems = [
   { to: '/dashboard', label: 'Overview', icon: LayoutDashboard },
   { to: '/dashboard/projects', label: 'Projects', icon: FolderGit2 },
-  { to: '/dashboard/content', label: 'Content', icon: FileText },
+  { to: '/content-pipeline', label: 'Content Pipeline', icon: FileText },
   { to: '/dashboard/research', label: 'Research', icon: BookOpen },
   { to: '/dashboard/personal', label: 'Calendar & Travel', icon: Calendar },
   { to: '/dashboard/finance', label: 'Finance', icon: Wallet },

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Copy, Sparkles, ChevronDown } from 'lucide-react'
+import { Copy, Sparkles } from 'lucide-react'
 import { toast } from 'sonner'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -117,7 +117,7 @@ export function RepurposeTool({
           onClick={handleGenerate}
           disabled={!source.trim() || selectedPlatforms.length === 0 || isGenerating}
         >
-          <ChevronDown className="mr-2 h-4 w-4" />
+          <Sparkles className="mr-2 h-4 w-4" />
           {isGenerating ? 'Generating…' : 'Generate copies'}
         </Button>
 

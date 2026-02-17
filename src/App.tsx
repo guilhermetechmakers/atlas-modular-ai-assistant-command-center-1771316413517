@@ -12,11 +12,11 @@ import { EmailVerificationPage } from '@/pages/auth/EmailVerification'
 import LoginSignupPage from '@/pages/Login/Signup'
 import { DashboardOverviewPage } from '@/pages/dashboard/Overview'
 import { ProjectsPage } from '@/pages/dashboard/Projects'
-import { ContentPipelinePage } from '@/pages/dashboard/ContentPipeline'
+import { ContentPipelinePage } from '@/pages/ContentPipeline'
 import { ResearchPage } from '@/pages/dashboard/Research'
 import { PersonalPage } from '@/pages/dashboard/Personal'
 import { FinancePage } from '@/pages/dashboard/Finance'
-import { AgentBuilderPage } from '@/pages/dashboard/AgentBuilder'
+import SkillsRegistryPage from '@/pages/AgentBuilder/SkillsRegistry'
 import { SettingsPage } from '@/pages/dashboard/Settings'
 import { AdminPage } from '@/pages/dashboard/Admin'
 import { AuditPage } from '@/pages/dashboard/Audit'
@@ -52,11 +52,21 @@ function App() {
         <Route path="/privacy" element={<PrivacyPolicyPage />} />
         <Route path="/terms" element={<TermsPage />} />
         <Route path="/500" element={<Error500Page />} />
-        <Route path="/content-pipeline" element={<Navigate to="/dashboard/content" replace />} />
+        <Route
+          path="/content-pipeline"
+          element={
+            <ProtectedRoute>
+              <DashboardLayout outletOverride={<ContentPipelinePage />} />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="/settings/preferences" element={<Navigate to="/dashboard/settings" replace />} />
+        <Route path="/settings-/-preferences" element={<Navigate to="/dashboard/settings" replace />} />
         <Route path="/finance-cockpit" element={<Navigate to="/dashboard/finance" replace />} />
         <Route path="/personal-/-calendar-&-travel" element={<Navigate to="/dashboard/personal" replace />} />
         <Route path="/research-knowledge-base" element={<Navigate to="/dashboard/research" replace />} />
         <Route path="/research-&-knowledge-base" element={<Navigate to="/dashboard/research" replace />} />
+        <Route path="/agent-builder-/-skills-registry" element={<Navigate to="/dashboard/agents" replace />} />
 
         <Route
           path="/dashboard"
@@ -72,7 +82,7 @@ function App() {
           <Route path="research" element={<ResearchPage />} />
           <Route path="personal" element={<PersonalPage />} />
           <Route path="finance" element={<FinancePage />} />
-          <Route path="agents" element={<AgentBuilderPage />} />
+          <Route path="agents" element={<SkillsRegistryPage />} />
           <Route path="settings" element={<SettingsPage />} />
           <Route path="admin" element={<AdminPage />} />
           <Route path="audit" element={<AuditPage />} />

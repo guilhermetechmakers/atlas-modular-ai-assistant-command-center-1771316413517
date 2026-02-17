@@ -1,11 +1,16 @@
-import { useState } from 'react'
+import { useState, type ReactNode } from 'react'
 import { Outlet } from 'react-router-dom'
 import { Menu } from 'lucide-react'
 import { AppSidebar, GlobalSearchTrigger } from '@/components/layout/AppSidebar'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
-export function DashboardLayout() {
+export interface DashboardLayoutProps {
+  /** When set, render this instead of the route Outlet (e.g. for /content-pipeline). */
+  outletOverride?: ReactNode
+}
+
+export function DashboardLayout({ outletOverride }: DashboardLayoutProps) {
   const [mobileOpen, setMobileOpen] = useState(false)
 
   return (
@@ -51,7 +56,7 @@ export function DashboardLayout() {
         </header>
 
         <div className="flex-1 p-4 md:p-6 lg:p-8">
-          <Outlet />
+          {outletOverride ?? <Outlet />}
         </div>
       </main>
     </div>

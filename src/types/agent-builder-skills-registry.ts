@@ -3,7 +3,8 @@
  * Aligns with agent_builder_skills_registry and related domain models.
  */
 
-export interface AgentBuilderSkillsRegistryRecord {
+/** API/DB record shape (table agent_builder_skills_registry) */
+export interface AgentBuilderSkillsRegistry {
   id: string
   user_id: string
   title: string
@@ -12,6 +13,9 @@ export interface AgentBuilderSkillsRegistryRecord {
   created_at: string
   updated_at: string
 }
+
+/** @deprecated use AgentBuilderSkillsRegistry */
+export type AgentBuilderSkillsRegistryRecord = AgentBuilderSkillsRegistry
 
 export type AgentTone = 'professional' | 'friendly' | 'concise' | 'formal' | 'casual'
 
