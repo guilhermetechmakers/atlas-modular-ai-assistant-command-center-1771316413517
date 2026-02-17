@@ -121,7 +121,7 @@ export function SignupPage() {
         </Card>
         <p className="mt-6 text-center text-sm text-muted-foreground">
           Already have an account?{' '}
-          <Link to="/login" className="text-primary font-medium hover:underline">Log in</Link>
+          <Link to="/login-/-signup" className="text-primary font-medium hover:underline">Log in</Link>
         </p>
       </div>
     </div>

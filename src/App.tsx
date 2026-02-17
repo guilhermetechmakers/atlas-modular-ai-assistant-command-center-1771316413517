@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { Toaster } from '@/components/ui/sonner'
 import { DashboardLayout } from '@/components/layout/DashboardLayout'
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute'
@@ -8,6 +8,7 @@ import { LoginPage } from '@/pages/auth/Login'
 import { SignupPage } from '@/pages/auth/Signup'
 import { PasswordResetPage } from '@/pages/auth/PasswordReset'
 import { EmailVerificationPage } from '@/pages/auth/EmailVerification'
+import LoginSignupPage from '@/pages/Login/Signup'
 import { DashboardOverviewPage } from '@/pages/dashboard/Overview'
 import { ProjectsPage } from '@/pages/dashboard/Projects'
 import { ContentPipelinePage } from '@/pages/dashboard/ContentPipeline'
@@ -33,10 +34,12 @@ function App() {
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/forgot-password" element={<PasswordResetPage />} />
         <Route path="/verify-email" element={<EmailVerificationPage />} />
+        <Route path="/login-/-signup" element={<LoginSignupPage />} />
         <Route path="/about" element={<AboutPage />} />
         <Route path="/privacy" element={<PrivacyPolicyPage />} />
         <Route path="/terms" element={<TermsPage />} />
         <Route path="/500" element={<Error500Page />} />
+        <Route path="/content-pipeline" element={<Navigate to="/dashboard/content" replace />} />
 
         <Route
           path="/dashboard"

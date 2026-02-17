@@ -41,8 +41,8 @@ export function LandingPage() {
           </Link>
           <nav className="flex items-center gap-4">
             <Link to="/about" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Docs</Link>
-            <Link to="/login" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Log in</Link>
-            <Link to="/signup">
+            <Link to="/login-/-signup" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Log in</Link>
+            <Link to="/login-/-signup">
               <Button size="sm">Get Started</Button>
             </Link>
           </nav>
