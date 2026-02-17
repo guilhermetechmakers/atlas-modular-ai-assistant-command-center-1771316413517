@@ -11,6 +11,7 @@ import { PasswordResetPage } from '@/pages/auth/PasswordReset'
 import { EmailVerificationPage } from '@/pages/auth/EmailVerification'
 import LoginSignupPage from '@/pages/Login/Signup'
 import { DashboardOverviewPage } from '@/pages/dashboard/Overview'
+import { CommandCenterPage } from '@/pages/Dashboard/CommandCenter'
 import { ProjectsPage } from '@/pages/dashboard/Projects'
 import { ContentPipelinePage } from '@/pages/ContentPipeline'
 import { ResearchPage } from '@/pages/dashboard/Research'
@@ -67,6 +68,7 @@ function App() {
         <Route path="/research-knowledge-base" element={<Navigate to="/dashboard/research" replace />} />
         <Route path="/research-&-knowledge-base" element={<Navigate to="/dashboard/research" replace />} />
         <Route path="/agent-builder-/-skills-registry" element={<Navigate to="/dashboard/agents" replace />} />
+        <Route path="/dashboard-/-command-center" element={<Navigate to="/dashboard/command-center" replace />} />
 
         <Route
           path="/dashboard"
@@ -77,6 +79,7 @@ function App() {
           }
         >
           <Route index element={<DashboardOverviewPage />} />
+          <Route path="command-center" element={<CommandCenterPage />} />
           <Route path="projects" element={<ProjectsPage />} />
           <Route path="content" element={<ContentPipelinePage />} />
           <Route path="research" element={<ResearchPage />} />

@@ -1,5 +1,7 @@
 import { useEffect, useCallback, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { toast } from 'sonner'
+import { ChevronRight, Bot, AlertCircle } from 'lucide-react'
 import {
   AgentCreationForm,
   SkillRegistry,
@@ -11,13 +13,24 @@ import {
   useAgentBuilderSkillsRegistries,
   useCreateAgentBuilderSkillsRegistry,
 } from '@/hooks/useAgentBuilderSkillsRegistry'
+import type { AgentFormValues } from '@/components/agent-builder-skills-registry'
 import type {
-  AgentFormValues,
   Skill,
   MemoryEntry,
   ApprovalPolicy,
   TestConsoleLog,
 } from '@/types/agent-builder-skills-registry'
+import { Button } from '@/components/ui/button'
+import { Skeleton } from '@/components/ui/skeleton'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
+import { cn } from '@/lib/utils'
 
 /** Mock skills for the registry when API has none */
 const MOCK_SKILLS: Skill[] = [
@@ -52,7 +65,12 @@ function uuid() {
 }
 
 export default function SkillsRegistryPage() {
-  const { data: registries = [] } = useAgentBuilderSkillsRegistries()
+  const {
+    data: registries = [],
+    isLoading: registriesLoading,
+    isError: registriesError,
+    refetch: refetchRegistries,
+  } = useAgentBuilderSkillsRegistries()
   const createMutation = useCreateAgentBuilderSkillsRegistry()
 
   const [selectedAgentId, setSelectedAgentId] = useState<string | null>(null)
@@ -62,6 +80,8 @@ export default function SkillsRegistryPage() {
   const [testLogs, setTestLogs] = useState<TestConsoleLog[]>([])
   const [isTestRunning, setTestRunning] = useState(false)
   const [skills] = useState<Skill[]>(MOCK_SKILLS)
+  const [skillPickerOpen, setSkillPickerOpen] = useState(false)
+  const [skillPickerDraft, setSkillPickerDraft] = useState<string[]>([])
 
   useEffect(() => {
     document.title = 'Agent Builder & Skills Registry | Atlas'
@@ -183,8 +203,73 @@ export default function SkillsRegistryPage() {
     toast.success('Logs cleared')
   }, [])
 
+  const openSkillPicker = useCallback(() => {
+    setSkillPickerDraft([...allowedSkillIds])
+    setSkillPickerOpen(true)
+  }, [allowedSkillIds])
+
+  const confirmSkillPicker = useCallback(() => {
+    setAllowedSkillIds([...skillPickerDraft])
+    setSkillPickerOpen(false)
+    toast.success('Skills updated')
+  }, [skillPickerDraft])
+
+  const toggleSkillInPicker = useCallback((skillId: string) => {
+    setSkillPickerDraft((prev) =>
+      prev.includes(skillId) ? prev.filter((id) => id !== skillId) : [...prev, skillId]
+    )
+  }, [])
+
+  if (registriesLoading) {
+    return (
+      <div className="space-y-6 animate-fade-in-up motion-reduce:animate-none">
+        <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-sm text-muted-foreground">
+          <Link to="/dashboard" className="hover:text-foreground transition-colors">Dashboard</Link>
+          <ChevronRight className="h-4 w-4 shrink-0" aria-hidden />
+          <span className="text-foreground font-medium">Agent Builder</span>
+        </nav>
+        <div className="space-y-4">
+          <Skeleton className="h-10 w-64 rounded-lg" />
+          <Skeleton className="h-4 w-96 rounded" />
+        </div>
+        <div className="grid gap-6 lg:grid-cols-2">
+          <Skeleton className="h-[420px] w-full rounded-card-lg" />
+          <Skeleton className="h-[320px] w-full rounded-card-lg" />
+        </div>
+        <Skeleton className="h-[280px] w-full rounded-card-lg" />
+      </div>
+    )
+  }
+
+  if (registriesError) {
+    return (
+      <div className="space-y-6 animate-fade-in-up motion-reduce:animate-none">
+        <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-sm text-muted-foreground">
+          <Link to="/dashboard" className="hover:text-foreground transition-colors">Dashboard</Link>
+          <ChevronRight className="h-4 w-4 shrink-0" aria-hidden />
+          <span className="text-foreground font-medium">Agent Builder</span>
+        </nav>
+        <div className="rounded-card-lg border border-destructive/30 bg-destructive/5 p-6 flex flex-col items-center justify-center text-center gap-4">
+          <AlertCircle className="h-12 w-12 text-destructive" aria-hidden />
+          <div>
+            <h2 className="text-lg font-semibold text-foreground">Failed to load agents</h2>
+            <p className="text-sm text-muted-foreground mt-1">Something went wrong. Please try again.</p>
+          </div>
+          <Button onClick={() => refetchRegistries()} variant="outline" className="transition-transform duration-200 hover:scale-[1.02]">
+            Retry
+          </Button>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="space-y-6 animate-fade-in-up motion-reduce:animate-none">
+      <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-sm text-muted-foreground">
+        <Link to="/dashboard" className="hover:text-foreground transition-colors">Dashboard</Link>
+        <ChevronRight className="h-4 w-4 shrink-0" aria-hidden />
+        <span className="text-foreground font-medium">Agent Builder</span>
+      </nav>
       <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-foreground md:text-3xl">
@@ -228,10 +313,17 @@ export default function SkillsRegistryPage() {
         )}
       </header>
 
+      {registries.length === 0 && (
+        <div className="rounded-card-lg border border-dashed border-border bg-card-secondary/50 p-6 flex flex-col items-center justify-center text-center gap-3">
+          <Bot className="h-12 w-12 text-muted-foreground" aria-hidden />
+          <p className="text-sm text-muted-foreground max-w-sm">No agents yet. Create your first agent below to get started.</p>
+        </div>
+      )}
+
       <div className="grid gap-6 lg:grid-cols-2">
         <AgentCreationForm
           allowedSkillIds={allowedSkillIds}
-          onSelectSkills={() => toast.info('Skill picker would open here')}
+          onSelectSkills={openSkillPicker}
           onSubmit={handleAgentFormSubmit}
           isLoading={createMutation.isPending}
         />
@@ -269,6 +361,53 @@ export default function SkillsRegistryPage() {
           disabled={!selectedAgentId}
         />
       </div>
+
+      <Dialog open={skillPickerOpen} onOpenChange={setSkillPickerOpen}>
+        <DialogContent showClose={true}>
+          <DialogHeader>
+            <DialogTitle>Select skills from registry</DialogTitle>
+            <DialogDescription>
+              Choose which skills this agent is allowed to use. Changes apply when you confirm.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-3 py-2 max-h-64 overflow-y-auto">
+            {skills.map((skill) => {
+              const checked = skillPickerDraft.includes(skill.id)
+              return (
+                <label
+                  key={skill.id}
+                  className={cn(
+                    'flex items-center gap-3 rounded-lg border border-border bg-card-secondary/50 p-3 cursor-pointer transition-all duration-200 hover:border-primary/30 hover:shadow-sm',
+                    checked && 'ring-2 ring-primary/40 border-primary/50'
+                  )}
+                >
+                  <input
+                    type="checkbox"
+                    checked={checked}
+                    onChange={() => toggleSkillInPicker(skill.id)}
+                    className="h-4 w-4 rounded border-input focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                    aria-label={`Select ${skill.name}`}
+                  />
+                  <div className="min-w-0 flex-1">
+                    <span className="font-medium text-foreground">{skill.name}</span>
+                    {skill.description && (
+                      <p className="text-xs text-muted-foreground mt-0.5">{skill.description}</p>
+                    )}
+                  </div>
+                </label>
+              )
+            })}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setSkillPickerOpen(false)} className="transition-transform duration-200 hover:scale-[1.02]">
+              Cancel
+            </Button>
+            <Button onClick={confirmSkillPicker} className="transition-transform duration-200 hover:scale-[1.02]">
+              Confirm
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

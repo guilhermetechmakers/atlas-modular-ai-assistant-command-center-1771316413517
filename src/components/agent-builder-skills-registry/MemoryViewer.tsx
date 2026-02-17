@@ -3,7 +3,6 @@ import { Brain, Trash2, ChevronDown, ChevronRight } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
-import { cn } from '@/lib/utils'
 import type { MemoryEntry as MemoryEntryType } from '@/types/agent-builder-skills-registry'
 
 export interface MemoryViewerProps {

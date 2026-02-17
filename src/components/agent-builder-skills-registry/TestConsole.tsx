@@ -103,16 +103,20 @@ export function TestConsole({
         </form>
 
         {!agentId ? (
-          <div className="rounded-lg border border-dashed border-border bg-card-secondary/50 py-8 px-4 text-center">
+          <div className="rounded-lg border border-dashed border-border bg-card-secondary/50 py-8 px-4 text-center flex flex-col items-center gap-2">
+            <Terminal className="h-10 w-10 text-muted-foreground" aria-hidden />
             <p className="text-sm text-muted-foreground">Select an agent to run test prompts.</p>
+            <p className="text-xs text-muted-foreground">Choose an agent above, then enter a prompt and run to see logs here.</p>
           </div>
         ) : (
           <div className="rounded-lg border border-border bg-card-secondary overflow-hidden">
             <div className="max-h-64 overflow-y-auto p-2 space-y-2 font-mono text-sm">
               {logs.length === 0 ? (
-                <p className="text-muted-foreground py-4 text-center">
-                  No logs yet. Run a prompt to see output.
-                </p>
+                <div className="flex flex-col items-center justify-center py-8 px-4 text-center gap-2">
+                  <Terminal className="h-10 w-10 text-muted-foreground" aria-hidden />
+                  <p className="text-sm text-muted-foreground">No logs yet.</p>
+                  <p className="text-xs text-muted-foreground">Enter a prompt above and click Run to test the agent.</p>
+                </div>
               ) : (
                 logs.map((log) => (
                   <div
