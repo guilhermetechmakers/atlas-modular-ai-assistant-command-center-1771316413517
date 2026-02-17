@@ -1,0 +1,1616 @@
+⚠️ CRITICAL EXECUTION RULES - READ FIRST ⚠️
+❌ NEVER run: npm run dev, npm start, yarn dev, pnpm dev, or ANY development server
+❌ NEVER run: long-running processes, servers, or commands that don't exit
+❌ NEVER test the application by starting it
+✅ ALLOWED: npm install, npm run build, npm run test (if needed)
+✅ YOUR TASK: Create/modify files only, then STOP and EXIT immediately
+⚠️ The MCP server handles all testing and validation separately
+
+You are an expert full-stack developer proficient in TypeScript, React, Next.js, and modern UI/UX frameworks (Tailwind CSS, Shadcn UI, Radix UI).
+
+=== DESIGN REFERENCE (MANDATORY) ===
+# Modern Design Best Practices
+
+## Philosophy
+
+Create unique, memorable experiences while maintaining consistency through modern design principles. Every project should feel distinct yet professional, innovative yet intuitive.
+
+---
+
+## Landing Pages & Marketing Sites
+
+### Hero Sections
+**Go beyond static backgrounds:**
+- Animated gradients with subtle movement
+- Particle systems or geometric shapes floating
+- Interactive canvas backgrounds (Three.js, WebGL)
+- Video backgrounds with proper fallbacks
+- Parallax scrolling effects
+- Gradient mesh animations
+- Morphing blob animations
+
+
+### Layout Patterns
+**Use modern grid systems:**
+- Bento grids (asymmetric card layouts)
+- Masonry layouts for varied content
+- Feature sections with diagonal cuts or curves
+- Overlapping elements with proper z-index
+- Split-screen designs with scroll-triggered reveals
+
+**Avoid:** Traditional 3-column equal grids
+
+### Scroll Animations
+**Engage users as they scroll:**
+- Fade-in and slide-up animations for sections
+- Scroll-triggered parallax effects
+- Progress indicators for long pages
+- Sticky elements that transform on scroll
+- Horizontal scroll sections for portfolios
+- Text reveal animations (word by word, letter by letter)
+- Number counters animating into view
+
+**Avoid:** Static pages with no scroll interaction
+
+### Call-to-Action Areas
+**Make CTAs impossible to miss:**
+- Gradient buttons with hover effects
+- Floating action buttons with micro-interactions
+- Animated borders or glowing effects
+- Scale/lift on hover
+- Interactive elements that respond to mouse position
+- Pulsing indicators for primary actions
+
+---
+
+## Dashboard Applications
+
+### Layout Structure
+**Always use collapsible side navigation:**
+- Sidebar that can collapse to icons only
+- Smooth transition animations between states
+- Persistent navigation state (remember user preference)
+- Mobile: drawer that slides in/out
+- Desktop: sidebar with expand/collapse toggle
+- Icons visible even when collapsed
+
+**Structure:**
+```
+/dashboard (layout wrapper with sidebar)
+  /dashboard/overview
+  /dashboard/analytics
+  /dashboard/settings
+  /dashboard/users
+  /dashboard/projects
+```
+
+All dashboard pages should be nested inside the dashboard layout, not separate routes.
+
+### Data Tables
+**Modern table design:**
+- Sticky headers on scroll
+- Row hover states with subtle elevation
+- Sortable columns with clear indicators
+- Pagination with items-per-page control
+- Search/filter with instant feedback
+- Selection checkboxes with bulk actions
+- Responsive: cards on mobile, table on desktop
+- Loading skeletons, not spinners
+- Empty states with illustrations or helpful text
+
+**Use modern table libraries:**
+- TanStack Table (React Table v8)
+- AG Grid for complex data
+- Data Grid from MUI (if using MUI)
+
+### Charts & Visualizations
+**Use the latest charting libraries:**
+- Recharts (for React, simple charts)
+- Chart.js v4 (versatile, well-maintained)
+- Apache ECharts (advanced, interactive)
+- D3.js (custom, complex visualizations)
+- Tremor (for dashboards, built on Recharts)
+
+**Chart best practices:**
+- Animated transitions when data changes
+- Interactive tooltips with detailed info
+- Responsive sizing
+- Color scheme matching design system
+- Legend placement that doesn't obstruct data
+- Loading states while fetching data
+
+### Dashboard Cards
+**Metric cards should stand out:**
+- Gradient backgrounds or colored accents
+- Trend indicators (↑ ↓ with color coding)
+- Sparkline charts for historical data
+- Hover effects revealing more detail
+- Icon representing the metric
+- Comparison to previous period
+
+---
+
+## Color & Visual Design
+
+### Color Palettes
+**Create depth with gradients:**
+- Primary gradient (not just solid primary color)
+- Subtle background gradients
+- Gradient text for headings
+- Gradient borders on cards
+- Elevated surfaces for depth
+
+**Color usage:**
+- 60-30-10 rule (dominant, secondary, accent)
+- Consistent semantic colors (success, warning, error)
+- Accessible contrast ratios (WCAG AA minimum)
+
+### Typography
+**Create hierarchy through contrast:**
+- Large, bold headings (48-72px for heroes)
+- Clear size differences between levels
+- Variable font weights (300, 400, 600, 700)
+- Letter spacing for small caps
+- Line height 1.5-1.7 for body text
+- Inter, Poppins, or DM Sans for modern feel
+
+### Shadows & Depth
+**Layer UI elements:**
+- Multi-layer shadows for realistic depth
+- Colored shadows matching element color
+- Elevated states on hover
+- Neumorphism for special elements (sparingly)
+
+---
+
+## Interactions & Micro-animations
+
+### Button Interactions
+**Every button should react:**
+- Scale slightly on hover (1.02-1.05)
+- Lift with shadow on hover
+- Ripple effect on click
+- Loading state with spinner or progress
+- Disabled state clearly visible
+- Success state with checkmark animation
+
+### Card Interactions
+**Make cards feel alive:**
+- Lift on hover with increased shadow
+- Subtle border glow on hover
+- Tilt effect following mouse (3D transform)
+- Smooth transitions (200-300ms)
+- Click feedback for interactive cards
+
+### Form Interactions
+**Guide users through forms:**
+- Input focus states with border color change
+- Floating labels that animate up
+- Real-time validation with inline messages
+- Success checkmarks for valid inputs
+- Error states with shake animation
+- Password strength indicators
+- Character count for text areas
+
+### Page Transitions
+**Smooth between views:**
+- Fade + slide for page changes
+- Skeleton loaders during data fetch
+- Optimistic UI updates
+- Stagger animations for lists
+- Route transition animations
+
+---
+
+## Mobile Responsiveness
+
+### Mobile-First Approach
+**Design for mobile, enhance for desktop:**
+- Touch targets minimum 44x44px
+- Generous padding and spacing
+- Sticky bottom navigation on mobile
+- Collapsible sections for long content
+- Swipeable cards and galleries
+- Pull-to-refresh where appropriate
+
+### Responsive Patterns
+**Adapt layouts intelligently:**
+- Hamburger menu → full nav bar
+- Card grid → stack on mobile
+- Sidebar → drawer
+- Multi-column → single column
+- Data tables → card list
+- Hide/show elements based on viewport
+
+---
+
+## Loading & Empty States
+
+### Loading States
+**Never leave users wondering:**
+- Skeleton screens matching content layout
+- Progress bars for known durations
+- Animated placeholders
+- Spinners only for short waits (<3s)
+- Stagger loading for multiple elements
+- Shimmer effects on skeletons
+
+### Empty States
+**Make empty states helpful:**
+- Illustrations or icons
+- Helpful copy explaining why it's empty
+- Clear CTA to add first item
+- Examples or suggestions
+- No "no data" text alone
+
+---
+
+## Unique Elements to Stand Out
+
+### Distinctive Features
+**Add personality:**
+- Custom cursor effects on landing pages
+- Animated page numbers or section indicators
+- Unusual hover effects (magnification, distortion)
+- Custom scrollbars
+- Glassmorphism for overlays
+- Animated SVG icons
+- Typewriter effects for hero text
+- Confetti or celebration animations for actions
+
+### Interactive Elements
+**Engage users:**
+- Drag-and-drop interfaces
+- Sliders and range controls
+- Toggle switches with animations
+- Progress steps with animations
+- Expandable/collapsible sections
+- Tabs with slide indicators
+- Image comparison sliders
+- Interactive demos or playgrounds
+
+---
+
+## Consistency Rules
+
+### Maintain Consistency
+**What should stay consistent:**
+- Spacing scale (4px, 8px, 16px, 24px, 32px, 48px, 64px)
+- Border radius values
+- Animation timing (200ms, 300ms, 500ms)
+- Color system (primary, secondary, accent, neutrals)
+- Typography scale
+- Icon style (outline vs filled)
+- Button styles across the app
+- Form element styles
+
+### What Can Vary
+**Project-specific customization:**
+- Color palette (different colors, same system)
+- Layout creativity (grids, asymmetry)
+- Illustration style
+- Animation personality
+- Feature-specific interactions
+- Hero section design
+- Card styling variations
+- Background patterns or textures
+
+---
+
+## Technical Excellence
+
+### Performance
+- Optimize images (WebP, lazy loading)
+- Code splitting for faster loads
+- Debounce search inputs
+- Virtualize long lists
+- Minimize re-renders
+- Use proper memoization
+
+### Accessibility
+- Keyboard navigation throughout
+- ARIA labels where needed
+- Focus indicators visible
+- Screen reader friendly
+- Sufficient color contrast
+- Respect reduced motion preferences
+
+---
+
+## Key Principles
+
+1. **Be Bold** - Don't be afraid to try unique layouts and interactions
+2. **Be Consistent** - Use the same patterns for similar functions
+3. **Be Responsive** - Design works beautifully on all devices
+4. **Be Fast** - Animations are smooth, loading is quick
+5. **Be Accessible** - Everyone can use what you build
+6. **Be Modern** - Use current design trends and technologies
+7. **Be Unique** - Each project should have its own personality
+8. **Be Intuitive** - Users shouldn't need instructions
+
+
+---
+
+# Project-Specific Customizations
+
+**IMPORTANT: This section contains the specific design requirements for THIS project. The guidelines above are universal best practices - these customizations below take precedence for project-specific decisions.**
+
+## User Design Requirements
+
+**
+- Use Tailwind CSS for styling
+- Use Shadcn UI components for consistency
+- Apply Radix UI for accessible primitives
+- Implement responsive design (mobile-first approach)
+
+**Component Structure:**
+- Main page container with proper layout
+- Header section with title and actions
+- Content area with data display/forms
+- Loading states with skeleton loaders
+- Error states with user-friendly messages
+- Empty states with helpful guidance
+
+**Visual States:**
+- Initial/Empty: Clear placeholder content
+- Loading: Skeleton loaders or spinners
+- Success: Data display with proper formatting
+- Error: User-friendly error messages with retry options
+
+**Interactions:**
+- Hover effects on interactive elements
+- Click feedback with visual indicators
+- Form validation with inline error messages
+- Toast notifications for actions (use Shadcn toast)
+
+## Components and Pages to Build
+
+**Main Page:**
+- `src/pages/ContentPipeline.tsx` - Main page component
+- Export default page component
+- Implement data fetching with React Query or SWR
+- Handle loading and error states
+
+**Related Components:**
+- `src/components/content-pipeline/IdeasList:capturequickideaswithtagsandsourcelink.tsx`
+- `src/components/content-pipeline/DraftEditor:WYSIWYG/MarkdowneditorwithversioningandAIassist.tsx`
+- `src/components/content-pipeline/ContentCalendar:drag-to-schedulepostswithplatformtags.tsx`
+- `src/components/content-pipeline/AssetManager:uploadandorganizethumbnails,scripts,outlines.tsx`
+- `src/components/content-pipeline/RepurposeTool:generatemulti-platformcopiesfromasinglesource.tsx`
+- `src/components/content-pipeline/PublishingScheduler:linktoschedulingconnectors(MVP:manualexport/GoogleCalendarblocks).tsx`
+
+## Navigation Between Components and Pages
+
+**Routing Setup:**
+- Add route: `/content-pipeline` in your routing configuration
+- Update navigation menu to include this page
+- Ensure proper route guards if authentication is required
+
+**Navigation Flow:**
+- **View Command Center Dashboard:**
+- **Create Task/Event from Agent Suggestion:**
+
+**Integration Points:**
+- Update navigation components to include new routes
+- Implement breadcrumbs if part of a multi-step flow
+
+## Userflow
+
+**Complete User Journey:**
+
+1. **View Command Center Dashboard** (step_page)
+   - User lands on the main dashboard showing unified summaries: GitHub activity, calendar, content tasks, finance alerts, and agent suggestions.
+   - Page type: Standard page
+
+2. **Create Task/Event from Agent Suggestion** (decision)
+   - User chooses to accept or modify an agent-suggested agenda item, triggering task/event creation.
+
+## Data Schema to be Implemented
+
+**Database Tables:**
+
+```sql
+-- content_pipeline table
+CREATE TABLE content_pipeline (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
+  title TEXT NOT NULL,
+  description TEXT,
+  status TEXT DEFAULT 'active',
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+```
+
+**Row Level Security (RLS):**
+
+```sql
+-- Enable RLS
+ALTER TABLE content_pipeline ENABLE ROW LEVEL SECURITY;
+
+-- Users can read their own data
+CREATE POLICY "content_pipeline_read_own" ON content_pipeline
+  FOR SELECT USING (auth.uid() = user_id);
+
+-- Users can insert their own data
+CREATE POLICY "content_pipeline_insert_own" ON content_pipeline
+  FOR INSERT WITH CHECK (auth.uid() = user_id);
+
+-- Users can update their own data
+CREATE POLICY "content_pipeline_update_own" ON content_pipeline
+  FOR UPDATE USING (auth.uid() = user_id);
+
+-- Users can delete their own data
+CREATE POLICY "content_pipeline_delete_own" ON content_pipeline
+  FOR DELETE USING (auth.uid() = user_id);
+```
+
+**TypeScript Types:**
+
+```typescript
+interface ContentPipeline {
+  id: string;
+  user_id: string;
+  title: string;
+  description?: string;
+  status: string;
+  created_at: string;
+  updated_at: string;
+}
+```
+
+## Acceptance Criteria
+
+**Functional Requirements:**
+- [ ] Content Pipeline is fully implemented according to scope
+- [ ] All required elements are present and functional
+- [ ] Ideas List: capture quick ideas with tags and source link is implemented and working
+- [ ] Draft Editor: WYSIWYG/Markdown editor with versioning and AI assist is implemented and working
+- [ ] Content Calendar: drag-to-schedule posts with platform tags is implemented and working
+- [ ] Asset Manager: upload and organize thumbnails, scripts, outlines is implemented and working
+- [ ] Repurpose Tool: generate multi-platform copies from a single source is implemented and working
+- [ ] Publishing Scheduler: link to scheduling connectors (MVP: manual export / Google Calendar blocks) is implemented and working
+- [ ] User flows work end-to-end without errors:
+  - [ ] View Command Center Dashboard
+  - [ ] Create Task/Event from Agent Suggestion
+- [ ] Proper error handling and user feedback
+- [ ] Loading states are implemented
+- [ ] Empty states are designed
+
+**Technical Requirements:**
+- [ ] Code follows project conventions and patterns
+- [ ] TypeScript types are properly defined
+- [ ] No console errors or warnings
+- [ ] Responsive design works on mobile, tablet, and desktop
+- [ ] Accessibility standards are met (WCAG 2.1 AA)
+- [ ] Page is accessible via navigation
+- [ ] SEO meta tags are configured
+- [ ] Page title is descriptive
+- [ ] Database schema is created
+- [ ] RLS policies are properly configured
+- [ ] CRUD operations work correctly
+
+**Integration:**
+- [ ] No breaking changes to existing features
+- [ ] All related user flows still work
+- [ ] Proper integration with existing codebase
+- [ ] Navigation flows are complete
+
+**Testing:**
+- [ ] Feature works as expected in development
+- [ ] Edge cases are handled
+- [ ] Error scenarios are tested
+- [ ] User flows are verified end-to-end
+
+## Implementation Notes
+
+When implementing this project:
+
+1. **Follow Universal Guidelines**: Use the design best practices documented above as your foundation
+2. **Apply Project Customizations**: Implement the specific design requirements stated in the "User Design Requirements" section
+3. **Priority Order**: Project-specific requirements override universal guidelines when there's a conflict
+4. **Color System**: Extract and implement color values as CSS custom properties in RGB format
+5. **Typography**: Define font families, sizes, and weights based on specifications
+6. **Spacing**: Establish consistent spacing scale following the design system
+7. **Components**: Style all Shadcn components to match the design aesthetic
+8. **Animations**: Use Motion library for transitions matching the design personality
+9. **Responsive Design**: Ensure mobile-first responsive implementation
+
+## Implementation Checklist
+
+- [ ] Review universal design guidelines above
+- [ ] Extract project-specific color palette and define CSS variables
+- [ ] Configure Tailwind theme with custom colors
+- [ ] Set up typography system (fonts, sizes, weights)
+- [ ] Define spacing and sizing scales
+- [ ] Create component variants matching design
+- [ ] Implement responsive breakpoints
+- [ ] Add animations and transitions
+- [ ] Ensure accessibility standards
+- [ ] Validate against user design requirements
+
+---
+
+**Remember: Always reference this file for design decisions. Do not use generic or placeholder designs.**
+
+
+*IMPORTANT*: For every page or component refer to # Modern Design Best Practices
+
+## Philosophy
+
+Create unique, memorable experiences while maintaining consistency through modern design principles. Every project should feel distinct yet professional, innovative yet intuitive.
+
+---
+
+## Landing Pages & Marketing Sites
+
+### Hero Sections
+**Go beyond static backgrounds:**
+- Animated gradients with subtle movement
+- Particle systems or geometric shapes floating
+- Interactive canvas backgrounds (Three.js, WebGL)
+- Video backgrounds with proper fallbacks
+- Parallax scrolling effects
+- Gradient mesh animations
+- Morphing blob animations
+
+
+### Layout Patterns
+**Use modern grid systems:**
+- Bento grids (asymmetric card layouts)
+- Masonry layouts for varied content
+- Feature sections with diagonal cuts or curves
+- Overlapping elements with proper z-index
+- Split-screen designs with scroll-triggered reveals
+
+**Avoid:** Traditional 3-column equal grids
+
+### Scroll Animations
+**Engage users as they scroll:**
+- Fade-in and slide-up animations for sections
+- Scroll-triggered parallax effects
+- Progress indicators for long pages
+- Sticky elements that transform on scroll
+- Horizontal scroll sections for portfolios
+- Text reveal animations (word by word, letter by letter)
+- Number counters animating into view
+
+**Avoid:** Static pages with no scroll interaction
+
+### Call-to-Action Areas
+**Make CTAs impossible to miss:**
+- Gradient buttons with hover effects
+- Floating action buttons with micro-interactions
+- Animated borders or glowing effects
+- Scale/lift on hover
+- Interactive elements that respond to mouse position
+- Pulsing indicators for primary actions
+
+---
+
+## Dashboard Applications
+
+### Layout Structure
+**Always use collapsible side navigation:**
+- Sidebar that can collapse to icons only
+- Smooth transition animations between states
+- Persistent navigation state (remember user preference)
+- Mobile: drawer that slides in/out
+- Desktop: sidebar with expand/collapse toggle
+- Icons visible even when collapsed
+
+**Structure:**
+```
+/dashboard (layout wrapper with sidebar)
+  /dashboard/overview
+  /dashboard/analytics
+  /dashboard/settings
+  /dashboard/users
+  /dashboard/projects
+```
+
+All dashboard pages should be nested inside the dashboard layout, not separate routes.
+
+### Data Tables
+**Modern table design:**
+- Sticky headers on scroll
+- Row hover states with subtle elevation
+- Sortable columns with clear indicators
+- Pagination with items-per-page control
+- Search/filter with instant feedback
+- Selection checkboxes with bulk actions
+- Responsive: cards on mobile, table on desktop
+- Loading skeletons, not spinners
+- Empty states with illustrations or helpful text
+
+**Use modern table libraries:**
+- TanStack Table (React Table v8)
+- AG Grid for complex data
+- Data Grid from MUI (if using MUI)
+
+### Charts & Visualizations
+**Use the latest charting libraries:**
+- Recharts (for React, simple charts)
+- Chart.js v4 (versatile, well-maintained)
+- Apache ECharts (advanced, interactive)
+- D3.js (custom, complex visualizations)
+- Tremor (for dashboards, built on Recharts)
+
+**Chart best practices:**
+- Animated transitions when data changes
+- Interactive tooltips with detailed info
+- Responsive sizing
+- Color scheme matching design system
+- Legend placement that doesn't obstruct data
+- Loading states while fetching data
+
+### Dashboard Cards
+**Metric cards should stand out:**
+- Gradient backgrounds or colored accents
+- Trend indicators (↑ ↓ with color coding)
+- Sparkline charts for historical data
+- Hover effects revealing more detail
+- Icon representing the metric
+- Comparison to previous period
+
+---
+
+## Color & Visual Design
+
+### Color Palettes
+**Create depth with gradients:**
+- Primary gradient (not just solid primary color)
+- Subtle background gradients
+- Gradient text for headings
+- Gradient borders on cards
+- Elevated surfaces for depth
+
+**Color usage:**
+- 60-30-10 rule (dominant, secondary, accent)
+- Consistent semantic colors (success, warning, error)
+- Accessible contrast ratios (WCAG AA minimum)
+
+### Typography
+**Create hierarchy through contrast:**
+- Large, bold headings (48-72px for heroes)
+- Clear size differences between levels
+- Variable font weights (300, 400, 600, 700)
+- Letter spacing for small caps
+- Line height 1.5-1.7 for body text
+- Inter, Poppins, or DM Sans for modern feel
+
+### Shadows & Depth
+**Layer UI elements:**
+- Multi-layer shadows for realistic depth
+- Colored shadows matching element color
+- Elevated states on hover
+- Neumorphism for special elements (sparingly)
+
+---
+
+## Interactions & Micro-animations
+
+### Button Interactions
+**Every button should react:**
+- Scale slightly on hover (1.02-1.05)
+- Lift with shadow on hover
+- Ripple effect on click
+- Loading state with spinner or progress
+- Disabled state clearly visible
+- Success state with checkmark animation
+
+### Card Interactions
+**Make cards feel alive:**
+- Lift on hover with increased shadow
+- Subtle border glow on hover
+- Tilt effect following mouse (3D transform)
+- Smooth transitions (200-300ms)
+- Click feedback for interactive cards
+
+### Form Interactions
+**Guide users through forms:**
+- Input focus states with border color change
+- Floating labels that animate up
+- Real-time validation with inline messages
+- Success checkmarks for valid inputs
+- Error states with shake animation
+- Password strength indicators
+- Character count for text areas
+
+### Page Transitions
+**Smooth between views:**
+- Fade + slide for page changes
+- Skeleton loaders during data fetch
+- Optimistic UI updates
+- Stagger animations for lists
+- Route transition animations
+
+---
+
+## Mobile Responsiveness
+
+### Mobile-First Approach
+**Design for mobile, enhance for desktop:**
+- Touch targets minimum 44x44px
+- Generous padding and spacing
+- Sticky bottom navigation on mobile
+- Collapsible sections for long content
+- Swipeable cards and galleries
+- Pull-to-refresh where appropriate
+
+### Responsive Patterns
+**Adapt layouts intelligently:**
+- Hamburger menu → full nav bar
+- Card grid → stack on mobile
+- Sidebar → drawer
+- Multi-column → single column
+- Data tables → card list
+- Hide/show elements based on viewport
+
+---
+
+## Loading & Empty States
+
+### Loading States
+**Never leave users wondering:**
+- Skeleton screens matching content layout
+- Progress bars for known durations
+- Animated placeholders
+- Spinners only for short waits (<3s)
+- Stagger loading for multiple elements
+- Shimmer effects on skeletons
+
+### Empty States
+**Make empty states helpful:**
+- Illustrations or icons
+- Helpful copy explaining why it's empty
+- Clear CTA to add first item
+- Examples or suggestions
+- No "no data" text alone
+
+---
+
+## Unique Elements to Stand Out
+
+### Distinctive Features
+**Add personality:**
+- Custom cursor effects on landing pages
+- Animated page numbers or section indicators
+- Unusual hover effects (magnification, distortion)
+- Custom scrollbars
+- Glassmorphism for overlays
+- Animated SVG icons
+- Typewriter effects for hero text
+- Confetti or celebration animations for actions
+
+### Interactive Elements
+**Engage users:**
+- Drag-and-drop interfaces
+- Sliders and range controls
+- Toggle switches with animations
+- Progress steps with animations
+- Expandable/collapsible sections
+- Tabs with slide indicators
+- Image comparison sliders
+- Interactive demos or playgrounds
+
+---
+
+## Consistency Rules
+
+### Maintain Consistency
+**What should stay consistent:**
+- Spacing scale (4px, 8px, 16px, 24px, 32px, 48px, 64px)
+- Border radius values
+- Animation timing (200ms, 300ms, 500ms)
+- Color system (primary, secondary, accent, neutrals)
+- Typography scale
+- Icon style (outline vs filled)
+- Button styles across the app
+- Form element styles
+
+### What Can Vary
+**Project-specific customization:**
+- Color palette (different colors, same system)
+- Layout creativity (grids, asymmetry)
+- Illustration style
+- Animation personality
+- Feature-specific interactions
+- Hero section design
+- Card styling variations
+- Background patterns or textures
+
+---
+
+## Technical Excellence
+
+### Performance
+- Optimize images (WebP, lazy loading)
+- Code splitting for faster loads
+- Debounce search inputs
+- Virtualize long lists
+- Minimize re-renders
+- Use proper memoization
+
+### Accessibility
+- Keyboard navigation throughout
+- ARIA labels where needed
+- Focus indicators visible
+- Screen reader friendly
+- Sufficient color contrast
+- Respect reduced motion preferences
+
+---
+
+## Key Principles
+
+1. **Be Bold** - Don't be afraid to try unique layouts and interactions
+2. **Be Consistent** - Use the same patterns for similar functions
+3. **Be Responsive** - Design works beautifully on all devices
+4. **Be Fast** - Animations are smooth, loading is quick
+5. **Be Accessible** - Everyone can use what you build
+6. **Be Modern** - Use current design trends and technologies
+7. **Be Unique** - Each project should have its own personality
+8. **Be Intuitive** - Users shouldn't need instructions
+
+
+---
+
+# Project-Specific Customizations
+
+**IMPORTANT: This section contains the specific design requirements for THIS project. The guidelines above are universal best practices - these customizations below take precedence for project-specific decisions.**
+
+## User Design Requirements
+
+**
+- Use Tailwind CSS for styling
+- Use Shadcn UI components for consistency
+- Apply Radix UI for accessible primitives
+- Implement responsive design (mobile-first approach)
+
+**Component Structure:**
+- Main page container with proper layout
+- Header section with title and actions
+- Content area with data display/forms
+- Loading states with skeleton loaders
+- Error states with user-friendly messages
+- Empty states with helpful guidance
+
+**Visual States:**
+- Initial/Empty: Clear placeholder content
+- Loading: Skeleton loaders or spinners
+- Success: Data display with proper formatting
+- Error: User-friendly error messages with retry options
+
+**Interactions:**
+- Hover effects on interactive elements
+- Click feedback with visual indicators
+- Form validation with inline error messages
+- Toast notifications for actions (use Shadcn toast)
+
+## Components and Pages to Build
+
+**Main Page:**
+- `src/pages/ContentPipeline.tsx` - Main page component
+- Export default page component
+- Implement data fetching with React Query or SWR
+- Handle loading and error states
+
+**Related Components:**
+- `src/components/content-pipeline/IdeasList:capturequickideaswithtagsandsourcelink.tsx`
+- `src/components/content-pipeline/DraftEditor:WYSIWYG/MarkdowneditorwithversioningandAIassist.tsx`
+- `src/components/content-pipeline/ContentCalendar:drag-to-schedulepostswithplatformtags.tsx`
+- `src/components/content-pipeline/AssetManager:uploadandorganizethumbnails,scripts,outlines.tsx`
+- `src/components/content-pipeline/RepurposeTool:generatemulti-platformcopiesfromasinglesource.tsx`
+- `src/components/content-pipeline/PublishingScheduler:linktoschedulingconnectors(MVP:manualexport/GoogleCalendarblocks).tsx`
+
+## Navigation Between Components and Pages
+
+**Routing Setup:**
+- Add route: `/content-pipeline` in your routing configuration
+- Update navigation menu to include this page
+- Ensure proper route guards if authentication is required
+
+**Navigation Flow:**
+- **View Command Center Dashboard:**
+- **Create Task/Event from Agent Suggestion:**
+
+**Integration Points:**
+- Update navigation components to include new routes
+- Implement breadcrumbs if part of a multi-step flow
+
+## Userflow
+
+**Complete User Journey:**
+
+1. **View Command Center Dashboard** (step_page)
+   - User lands on the main dashboard showing unified summaries: GitHub activity, calendar, content tasks, finance alerts, and agent suggestions.
+   - Page type: Standard page
+
+2. **Create Task/Event from Agent Suggestion** (decision)
+   - User chooses to accept or modify an agent-suggested agenda item, triggering task/event creation.
+
+## Data Schema to be Implemented
+
+**Database Tables:**
+
+```sql
+-- content_pipeline table
+CREATE TABLE content_pipeline (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
+  title TEXT NOT NULL,
+  description TEXT,
+  status TEXT DEFAULT 'active',
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+```
+
+**Row Level Security (RLS):**
+
+```sql
+-- Enable RLS
+ALTER TABLE content_pipeline ENABLE ROW LEVEL SECURITY;
+
+-- Users can read their own data
+CREATE POLICY "content_pipeline_read_own" ON content_pipeline
+  FOR SELECT USING (auth.uid() = user_id);
+
+-- Users can insert their own data
+CREATE POLICY "content_pipeline_insert_own" ON content_pipeline
+  FOR INSERT WITH CHECK (auth.uid() = user_id);
+
+-- Users can update their own data
+CREATE POLICY "content_pipeline_update_own" ON content_pipeline
+  FOR UPDATE USING (auth.uid() = user_id);
+
+-- Users can delete their own data
+CREATE POLICY "content_pipeline_delete_own" ON content_pipeline
+  FOR DELETE USING (auth.uid() = user_id);
+```
+
+**TypeScript Types:**
+
+```typescript
+interface ContentPipeline {
+  id: string;
+  user_id: string;
+  title: string;
+  description?: string;
+  status: string;
+  created_at: string;
+  updated_at: string;
+}
+```
+
+## Acceptance Criteria
+
+**Functional Requirements:**
+- [ ] Content Pipeline is fully implemented according to scope
+- [ ] All required elements are present and functional
+- [ ] Ideas List: capture quick ideas with tags and source link is implemented and working
+- [ ] Draft Editor: WYSIWYG/Markdown editor with versioning and AI assist is implemented and working
+- [ ] Content Calendar: drag-to-schedule posts with platform tags is implemented and working
+- [ ] Asset Manager: upload and organize thumbnails, scripts, outlines is implemented and working
+- [ ] Repurpose Tool: generate multi-platform copies from a single source is implemented and working
+- [ ] Publishing Scheduler: link to scheduling connectors (MVP: manual export / Google Calendar blocks) is implemented and working
+- [ ] User flows work end-to-end without errors:
+  - [ ] View Command Center Dashboard
+  - [ ] Create Task/Event from Agent Suggestion
+- [ ] Proper error handling and user feedback
+- [ ] Loading states are implemented
+- [ ] Empty states are designed
+
+**Technical Requirements:**
+- [ ] Code follows project conventions and patterns
+- [ ] TypeScript types are properly defined
+- [ ] No console errors or warnings
+- [ ] Responsive design works on mobile, tablet, and desktop
+- [ ] Accessibility standards are met (WCAG 2.1 AA)
+- [ ] Page is accessible via navigation
+- [ ] SEO meta tags are configured
+- [ ] Page title is descriptive
+- [ ] Database schema is created
+- [ ] RLS policies are properly configured
+- [ ] CRUD operations work correctly
+
+**Integration:**
+- [ ] No breaking changes to existing features
+- [ ] All related user flows still work
+- [ ] Proper integration with existing codebase
+- [ ] Navigation flows are complete
+
+**Testing:**
+- [ ] Feature works as expected in development
+- [ ] Edge cases are handled
+- [ ] Error scenarios are tested
+- [ ] User flows are verified end-to-end
+
+## Implementation Notes
+
+When implementing this project:
+
+1. **Follow Universal Guidelines**: Use the design best practices documented above as your foundation
+2. **Apply Project Customizations**: Implement the specific design requirements stated in the "User Design Requirements" section
+3. **Priority Order**: Project-specific requirements override universal guidelines when there's a conflict
+4. **Color System**: Extract and implement color values as CSS custom properties in RGB format
+5. **Typography**: Define font families, sizes, and weights based on specifications
+6. **Spacing**: Establish consistent spacing scale following the design system
+7. **Components**: Style all Shadcn components to match the design aesthetic
+8. **Animations**: Use Motion library for transitions matching the design personality
+9. **Responsive Design**: Ensure mobile-first responsive implementation
+
+## Implementation Checklist
+
+- [ ] Review universal design guidelines above
+- [ ] Extract project-specific color palette and define CSS variables
+- [ ] Configure Tailwind theme with custom colors
+- [ ] Set up typography system (fonts, sizes, weights)
+- [ ] Define spacing and sizing scales
+- [ ] Create component variants matching design
+- [ ] Implement responsive breakpoints
+- [ ] Add animations and transitions
+- [ ] Ensure accessibility standards
+- [ ] Validate against user design requirements
+
+---
+
+**Remember: Always reference this file for design decisions. Do not use generic or placeholder designs.**
+ for bestpractices and # GitHub Integration
+
+## Complete Description
+
+OAuth connection to GitHub for reading repos, issues, PRs and creating issues (MVP write ops). This feature is essential for enabling the Project Manager Agent to interact with GitHub, allowing users to manage their projects effectively within the Atlas platform.
+
+**Scope Context:**
+- **Type:** page
+- **Purpose:** Project explorer focused on GitHub: connect accounts, select repos, view issues/PRs/commits, create issues, and manage roadmaps and boards mapped to GitHub issues.
+
+**Required Elements:**
+- Repo Selector: connect/manage GitHub accounts and choose repos
+- Repo Activity Feed: commits, PRs, issues with filters
+- Issue List & Detail Panel: search, filter, create issue modal mapped to github.create_issue
+- Roadmap & Milestones: timeline view with milestones and ability to create epics/milestones
+- Task Board: Kanban mapped to GitHub issue states, drag-and-drop
+- AI PM Actions: 'Summarize recent activity', 'Create issues from goal' buttons
+
+## UI Guidelines
+
+**Design System:**
+- Use Tailwind CSS for styling
+- Use Shadcn UI components for consistency
+- Apply Radix UI for accessible primitives
+- Implement responsive design (mobile-first approach)
+
+**Component Structure:**
+- Main page container with proper layout
+- Header section with title and actions
+- Content area with data display/forms
+- Loading states with skeleton loaders
+- Error states with user-friendly messages
+- Empty states with helpful guidance
+
+**Visual States:**
+- Initial/Empty: Clear placeholder content
+- Loading: Skeleton loaders or spinners
+- Success: Data display with proper formatting
+- Error: User-friendly error messages with retry options
+
+**Interactions:**
+- Hover effects on interactive elements
+- Click feedback with visual indicators
+- Form validation with inline error messages
+- Toast notifications for actions (use Shadcn toast)
+
+## Components and Pages to Build
+
+**Main Page:**
+- `src/pages/Projects(GitHub).tsx` - Main page component
+- Export default page component
+- Implement data fetching with React Query or SWR
+- Handle loading and error states
+
+**Related Components:**
+- `src/components/projects-(github)/RepoSelector:connect/manageGitHubaccountsandchooserepos.tsx`
+- `src/components/projects-(github)/RepoActivityFeed:commits,PRs,issueswithfilters.tsx`
+- `src/components/projects-(github)/IssueList&DetailPanel:search,filter,createissuemodalmappedtogithub.create_issue.tsx`
+- `src/components/projects-(github)/Roadmap&Milestones:timelineviewwithmilestonesandabilitytocreateepics/milestones.tsx`
+- `src/components/projects-(github)/TaskBoard:KanbanmappedtoGitHubissuestates,drag-and-drop.tsx`
+- `src/components/projects-(github)/AIPMActions:'Summarizerecentactivity','Createissuesfromgoal'buttons.tsx`
+
+## Navigation Between Components and Pages
+
+**Routing Setup:**
+- Add route: `/projects-(github)` in your routing configuration
+- Update navigation menu to include this page
+- Ensure proper route guards if authentication is required
+
+**Navigation Flow:**
+- **View Manager Multi-Project Dashboard:**
+- **Review Project Status & Issues:**
+  - Trigger: User action
+  - Result: Navigate to next step
+
+**Integration Points:**
+- Update navigation components to include new routes
+- Implement breadcrumbs if part of a multi-step flow
+
+## Userflow
+
+**Complete User Journey:**
+
+1. **View Manager Multi-Project Dashboard** (step_page)
+   - Manager sees high-level overview of all projects, team tasks, content drafts, and finance alerts.
+   - Page type: Standard page
+
+2. **Review Project Status & Issues** (action)
+   - Manager selects a project card to view detailed status, open issues, and recent activity.
+   - Action: User performs action
+   - Expected result: Action completes successfully
+
+## Data Schema to be Implemented
+
+**Database Tables:**
+
+```sql
+-- projects_(github) table
+CREATE TABLE projects_(github) (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
+  title TEXT NOT NULL,
+  description TEXT,
+  status TEXT DEFAULT 'active',
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+```
+
+**Row Level Security (RLS):**
+
+```sql
+-- Enable RLS
+ALTER TABLE projects_(github) ENABLE ROW LEVEL SECURITY;
+
+-- Users can read their own data
+CREATE POLICY "projects_(github)_read_own" ON projects_(github)
+  FOR SELECT USING (auth.uid() = user_id);
+
+-- Users can insert their own data
+CREATE POLICY "projects_(github)_insert_own" ON projects_(github)
+  FOR INSERT WITH CHECK (auth.uid() = user_id);
+
+-- Users can update their own data
+CREATE POLICY "projects_(github)_update_own" ON projects_(github)
+  FOR UPDATE USING (auth.uid() = user_id);
+
+-- Users can delete their own data
+CREATE POLICY "projects_(github)_delete_own" ON projects_(github)
+  FOR DELETE USING (auth.uid() = user_id);
+```
+
+**TypeScript Types:**
+
+```typescript
+interface Projects(GitHub) {
+  id: string;
+  user_id: string;
+  title: string;
+  description?: string;
+  status: string;
+  created_at: string;
+  updated_at: string;
+}
+```
+
+## Acceptance Criteria
+
+**Functional Requirements:**
+- [ ] Projects (GitHub) is fully implemented according to scope
+- [ ] All required elements are present and functional
+- [ ] Repo Selector: connect/manage GitHub accounts and choose repos is implemented and working
+- [ ] Repo Activity Feed: commits, PRs, issues with filters is implemented and working
+- [ ] Issue List & Detail Panel: search, filter, create issue modal mapped to github.create_issue is implemented and working
+- [ ] Roadmap & Milestones: timeline view with milestones and ability to create epics/milestones is implemented and working
+- [ ] Task Board: Kanban mapped to GitHub issue states, drag-and-drop is implemented and working
+- [ ] AI PM Actions: 'Summarize recent activity', 'Create issues from goal' buttons is implemented and working
+- [ ] User flows work end-to-end without errors:
+  - [ ] View Manager Multi-Project Dashboard
+  - [ ] Review Project Status & Issues
+- [ ] Proper error handling and user feedback
+- [ ] Loading states are implemented
+- [ ] Empty states are designed
+
+**Technical Requirements:**
+- [ ] Code follows project conventions and patterns
+- [ ] TypeScript types are properly defined
+- [ ] No console errors or warnings
+- [ ] Responsive design works on mobile, tablet, and desktop
+- [ ] Accessibility standards are met (WCAG 2.1 AA)
+- [ ] Page is accessible via navigation
+- [ ] SEO meta tags are configured
+- [ ] Page title is descriptive
+- [ ] Database schema is created
+- [ ] RLS policies are properly configured
+- [ ] CRUD operations work correctly
+
+**Integration:**
+- [ ] No breaking changes to existing features
+- [ ] All related user flows still work
+- [ ] Proper integration with existing codebase
+- [ ] Navigation flows are complete
+
+**Testing:**
+- [ ] Feature works as expected in development
+- [ ] Edge cases are handled
+- [ ] Error scenarios are tested
+- [ ] User flows are verified end-to-end
+ for style.
+
+CRITICAL DESIGN REQUIREMENTS:
+- You MUST follow ALL design principles and patterns specified in the Design Reference above
+- Do NOT deviate from the design specifications without explicit user permission
+- Implement ALL visual design elements (colors, typography, spacing, shadows, animations) as specified
+- Follow the layout patterns and component designs exactly as documented
+- Ensure all interactions and micro-animations match the reference specifications
+
+CRITICAL TECHNICAL REQUIREMENTS:
+- React 18.3.1, React Router 6.30.1
+- Tailwind CSS v3 with tailwind.config.js and custom keyframes
+- @tailwindcss/typography plugin for rich text content
+- Tailwind CSS animations (NOT Motion library or framer-motion)
+- Sonner for toasts
+- Recharts for data visualization
+- Native fetch() with API utilities in src/lib/api.ts
+- Design system with CSS custom properties
+- Use RGB color values for theming
+- When Supabase is configured: use Edge Functions for LLM and server-only logic; never expose API keys in the client
+
+=== TASK ===
+# GitHub Integration
+
+## Complete Description
+
+OAuth connection to GitHub for reading repos, issues, PRs and creating issues (MVP write ops). This feature is essential for enabling the Project Manager Agent to interact with GitHub, allowing users to manage their projects effectively within the Atlas platform.
+
+**Scope Context:**
+- **Type:** page
+- **Purpose:** Project explorer focused on GitHub: connect accounts, select repos, view issues/PRs/commits, create issues, and manage roadmaps and boards mapped to GitHub issues.
+
+**Required Elements:**
+- Repo Selector: connect/manage GitHub accounts and choose repos
+- Repo Activity Feed: commits, PRs, issues with filters
+- Issue List & Detail Panel: search, filter, create issue modal mapped to github.create_issue
+- Roadmap & Milestones: timeline view with milestones and ability to create epics/milestones
+- Task Board: Kanban mapped to GitHub issue states, drag-and-drop
+- AI PM Actions: 'Summarize recent activity', 'Create issues from goal' buttons
+
+## UI Guidelines
+
+**Design System:**
+- Use Tailwind CSS for styling
+- Use Shadcn UI components for consistency
+- Apply Radix UI for accessible primitives
+- Implement responsive design (mobile-first approach)
+
+**Component Structure:**
+- Main page container with proper layout
+- Header section with title and actions
+- Content area with data display/forms
+- Loading states with skeleton loaders
+- Error states with user-friendly messages
+- Empty states with helpful guidance
+
+**Visual States:**
+- Initial/Empty: Clear placeholder content
+- Loading: Skeleton loaders or spinners
+- Success: Data display with proper formatting
+- Error: User-friendly error messages with retry options
+
+**Interactions:**
+- Hover effects on interactive elements
+- Click feedback with visual indicators
+- Form validation with inline error messages
+- Toast notifications for actions (use Shadcn toast)
+
+## Components and Pages to Build
+
+**Main Page:**
+- `src/pages/Projects(GitHub).tsx` - Main page component
+- Export default page component
+- Implement data fetching with React Query or SWR
+- Handle loading and error states
+
+**Related Components:**
+- `src/components/projects-(github)/RepoSelector:connect/manageGitHubaccountsandchooserepos.tsx`
+- `src/components/projects-(github)/RepoActivityFeed:commits,PRs,issueswithfilters.tsx`
+- `src/components/projects-(github)/IssueList&DetailPanel:search,filter,createissuemodalmappedtogithub.create_issue.tsx`
+- `src/components/projects-(github)/Roadmap&Milestones:timelineviewwithmilestonesandabilitytocreateepics/milestones.tsx`
+- `src/components/projects-(github)/TaskBoard:KanbanmappedtoGitHubissuestates,drag-and-drop.tsx`
+- `src/components/projects-(github)/AIPMActions:'Summarizerecentactivity','Createissuesfromgoal'buttons.tsx`
+
+## Navigation Between Components and Pages
+
+**Routing Setup:**
+- Add route: `/projects-(github)` in your routing configuration
+- Update navigation menu to include this page
+- Ensure proper route guards if authentication is required
+
+**Navigation Flow:**
+- **View Manager Multi-Project Dashboard:**
+- **Review Project Status & Issues:**
+  - Trigger: User action
+  - Result: Navigate to next step
+
+**Integration Points:**
+- Update navigation components to include new routes
+- Implement breadcrumbs if part of a multi-step flow
+
+## Userflow
+
+**Complete User Journey:**
+
+1. **View Manager Multi-Project Dashboard** (step_page)
+   - Manager sees high-level overview of all projects, team tasks, content drafts, and finance alerts.
+   - Page type: Standard page
+
+2. **Review Project Status & Issues** (action)
+   - Manager selects a project card to view detailed status, open issues, and recent activity.
+   - Action: User performs action
+   - Expected result: Action completes successfully
+
+## Data Schema to be Implemented
+
+**Database Tables:**
+
+```sql
+-- projects_(github) table
+CREATE TABLE projects_(github) (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
+  title TEXT NOT NULL,
+  description TEXT,
+  status TEXT DEFAULT 'active',
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+```
+
+**Row Level Security (RLS):**
+
+```sql
+-- Enable RLS
+ALTER TABLE projects_(github) ENABLE ROW LEVEL SECURITY;
+
+-- Users can read their own data
+CREATE POLICY "projects_(github)_read_own" ON projects_(github)
+  FOR SELECT USING (auth.uid() = user_id);
+
+-- Users can insert their own data
+CREATE POLICY "projects_(github)_insert_own" ON projects_(github)
+  FOR INSERT WITH CHECK (auth.uid() = user_id);
+
+-- Users can update their own data
+CREATE POLICY "projects_(github)_update_own" ON projects_(github)
+  FOR UPDATE USING (auth.uid() = user_id);
+
+-- Users can delete their own data
+CREATE POLICY "projects_(github)_delete_own" ON projects_(github)
+  FOR DELETE USING (auth.uid() = user_id);
+```
+
+**TypeScript Types:**
+
+```typescript
+interface Projects(GitHub) {
+  id: string;
+  user_id: string;
+  title: string;
+  description?: string;
+  status: string;
+  created_at: string;
+  updated_at: string;
+}
+```
+
+## Acceptance Criteria
+
+**Functional Requirements:**
+- [ ] Projects (GitHub) is fully implemented according to scope
+- [ ] All required elements are present and functional
+- [ ] Repo Selector: connect/manage GitHub accounts and choose repos is implemented and working
+- [ ] Repo Activity Feed: commits, PRs, issues with filters is implemented and working
+- [ ] Issue List & Detail Panel: search, filter, create issue modal mapped to github.create_issue is implemented and working
+- [ ] Roadmap & Milestones: timeline view with milestones and ability to create epics/milestones is implemented and working
+- [ ] Task Board: Kanban mapped to GitHub issue states, drag-and-drop is implemented and working
+- [ ] AI PM Actions: 'Summarize recent activity', 'Create issues from goal' buttons is implemented and working
+- [ ] User flows work end-to-end without errors:
+  - [ ] View Manager Multi-Project Dashboard
+  - [ ] Review Project Status & Issues
+- [ ] Proper error handling and user feedback
+- [ ] Loading states are implemented
+- [ ] Empty states are designed
+
+**Technical Requirements:**
+- [ ] Code follows project conventions and patterns
+- [ ] TypeScript types are properly defined
+- [ ] No console errors or warnings
+- [ ] Responsive design works on mobile, tablet, and desktop
+- [ ] Accessibility standards are met (WCAG 2.1 AA)
+- [ ] Page is accessible via navigation
+- [ ] SEO meta tags are configured
+- [ ] Page title is descriptive
+- [ ] Database schema is created
+- [ ] RLS policies are properly configured
+- [ ] CRUD operations work correctly
+
+**Integration:**
+- [ ] No breaking changes to existing features
+- [ ] All related user flows still work
+- [ ] Proper integration with existing codebase
+- [ ] Navigation flows are complete
+
+**Testing:**
+- [ ] Feature works as expected in development
+- [ ] Edge cases are handled
+- [ ] Error scenarios are tested
+- [ ] User flows are verified end-to-end
+
+
+=== SUCCESS CRITERIA ===
+# Success Criteria Checklist
+
+## Code Quality
+
+### TypeScript
+- [ ] No TypeScript errors (`tsc --noEmit` passes)
+- [ ] All functions and components have proper type definitions
+- [ ] No `any` types used (use `unknown` if type is truly unknown)
+- [ ] Props interfaces defined for all components
+- [ ] API responses have type definitions
+
+### Code Standards
+- [ ] All imports use path aliases (@/ prefix)
+- [ ] Components follow the established naming convention
+- [ ] Files are organized in correct directories
+- [ ] No unused imports or variables
+- [ ] Consistent code formatting
+
+## Component Implementation
+
+### UI Components
+- [ ] Use shadcn/ui components (Button, Card, Input, etc.) instead of building from scratch
+- [ ] All interactive elements have hover states
+- [ ] Components use the `cn()` utility for class merging
+- [ ] Proper TypeScript props interfaces defined
+- [ ] Components are responsive (mobile, tablet, desktop)
+
+### Animations
+- [ ] Motion library used for all animations (NOT framer-motion)
+- [ ] Page transitions implemented with fade/slide
+- [ ] Interactive elements have whileHover/whileTap animations
+- [ ] List items use stagger animations where appropriate
+- [ ] Animations respect `prefers-reduced-motion`
+
+### Icons
+- [ ] Lucide React icons used consistently
+- [ ] Icons have consistent sizing (h-4 w-4, h-5 w-5, h-6 w-6)
+- [ ] Icon colors match design system (text-primary, text-muted-foreground)
+
+## Data Management
+
+### React Query
+- [ ] All data fetching uses React Query hooks
+- [ ] Query keys follow the established pattern
+- [ ] Mutations invalidate related queries
+- [ ] Loading and error states handled
+- [ ] Optimistic updates implemented where appropriate
+
+### Forms
+- [ ] Forms use react-hook-form
+- [ ] Validation uses Zod schemas
+- [ ] Error messages display properly
+- [ ] Form submission shows loading state
+- [ ] Success/error feedback via toast notifications
+
+### API Layer
+- [ ] API functions in src/api/ directory
+- [ ] Axios used for HTTP requests
+- [ ] Proper error handling with try/catch
+- [ ] Auth tokens handled by interceptors
+- [ ] Type-safe API function signatures
+
+## User Experience
+
+### Notifications
+- [ ] Sonner toasts used for all notifications
+- [ ] Success actions show success toast
+- [ ] Errors show descriptive error messages
+- [ ] Loading states show toast.loading()
+
+### Loading States
+- [ ] Skeleton loaders shown during data fetch
+- [ ] Buttons show loading state during submission
+- [ ] Disabled state applied during async operations
+
+### Error Handling
+- [ ] Network errors caught and displayed
+- [ ] User-friendly error messages (no stack traces)
+- [ ] Fallback UI for error states
+- [ ] No unhandled promise rejections
+
+## Navigation
+
+### Route Accessibility
+- [ ] All pages have routes defined in router configuration
+- [ ] Every page is accessible through navigation (menu, sidebar, or direct URL)
+- [ ] Main pages (Dashboard, Home, Settings, etc.) accessible from primary navigation
+- [ ] Secondary pages accessible through contextual navigation or direct links
+- [ ] Deep-linked pages have breadcrumbs or back navigation
+- [ ] 404/Not Found page implemented for invalid routes
+- [ ] Protected routes have proper authentication checks
+- [ ] Navigation state persists across page refreshes where appropriate
+
+### Navigation UX
+- [ ] Active route highlighted in navigation menu
+- [ ] Clear visual hierarchy in navigation structure
+- [ ] Mobile navigation is accessible and usable
+- [ ] Navigation items have hover/focus states
+- [ ] Nested routes show parent-child relationships
+- [ ] User can always return to main areas (Dashboard/Home)
+
+## Styling
+
+### Tailwind CSS
+- [ ] Tailwind v3 classes used
+- [ ] HSL color variables from design system
+- [ ] Custom CSS properties used where defined
+- [ ] Responsive breakpoints: mobile-first approach
+- [ ] Dark mode support via CSS variables
+
+### Design System
+- [ ] Colors use theme variables (primary, secondary, accent)
+- [ ] Spacing uses Tailwind scale (p-4, gap-6, etc.)
+- [ ] Border radius uses theme values (rounded-lg)
+- [ ] Shadows use theme values (shadow-card)
+- [ ] Typography follows Inter font system
+
+## Accessibility
+
+- [ ] Semantic HTML elements used
+- [ ] Buttons have descriptive labels
+- [ ] Forms have proper labels
+- [ ] Focus states visible on interactive elements
+- [ ] Color contrast meets WCAG standards
+
+## Performance
+
+- [ ] No console.log statements in production code
+- [ ] No console errors in browser
+- [ ] Images optimized (WebP, lazy loading)
+- [ ] Large lists use virtualization if needed
+- [ ] React Query cache configured appropriately
+
+## Testing Readiness
+
+- [ ] Components structured for easy testing
+- [ ] Business logic separated from presentation
+- [ ] Mock-friendly API layer
+- [ ] No hardcoded values that should be configurable
+- [ ] Environment variables properly configured
+
+## Final Checks
+
+- [ ] Code builds without errors (`npm run build`)
+- [ ] Development server runs without errors (`npm run dev`)
+- [ ] No TypeScript errors in editor
+- [ ] Browser console is clean (no errors or warnings)
+- [ ] All functionality works as expected
+- [ ] Code follows existing project patterns
+- [ ] Changes are consistent with the rest of the codebase
+
+
+
+IMPORTANT: ALL styling and design decisions must follow the Design Reference section above EXACTLY. Do not make arbitrary design choices.
+
+Analyze the existing project structure and implement the task following the patterns already established. Ensure all success criteria are met.
