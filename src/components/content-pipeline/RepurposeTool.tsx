@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Copy, Sparkles } from 'lucide-react'
 import { toast } from 'sonner'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -36,6 +36,10 @@ export function RepurposeTool({
   const [generatedLocal, setGeneratedLocal] = useState<Record<PlatformTag, string>>({} as Record<PlatformTag, string>)
   const generated = generatedProp ?? generatedLocal
   const [isGenerating, setIsGenerating] = useState(false)
+
+  useEffect(() => {
+    setSource(sourceContent)
+  }, [sourceContent])
 
   const togglePlatform = (p: PlatformTag) => {
     setSelectedPlatforms((prev) =>
@@ -122,7 +126,7 @@ export function RepurposeTool({
         </Button>
 
         {Object.keys(generated).length > 0 && (
-          <div className="space-y-3 pt-4 border-t border-border animate-fade-in">
+          <div className="space-y-3 pt-4 border-t border-border animate-fade-in motion-reduce:animate-none">
             <p className="text-sm font-medium text-foreground">Generated copies</p>
             {Object.entries(generated).map(([platform, text]) => (
               <div

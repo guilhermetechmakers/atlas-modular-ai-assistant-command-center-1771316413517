@@ -1,6 +1,7 @@
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
+import { useEffect } from 'react'
 import { Bot, Plus } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -9,6 +10,7 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { cn } from '@/lib/utils'
 import type { AgentTone, MemoryScope } from '@/types/agent-builder-skills-registry'
+import type { AgentBuilderSkillsRegistry } from '@/types/agent-builder-skills-registry'
 
 const agentFormSchema = z.object({
   name: z.string().min(1, 'Name is required').max(120),
@@ -36,25 +38,39 @@ const MEMORY_SCOPE_OPTIONS: { value: MemoryScope; label: string }[] = [
 
 export interface AgentCreationFormProps {
   defaultValues?: Partial<AgentFormValues>
+  /** When set, form is in edit mode: pre-fills from agent and submit calls onUpdate */
+  initialAgent?: AgentBuilderSkillsRegistry | null
   allowedSkillIds?: string[]
   onSelectSkills?: () => void
   onSubmit?: (values: AgentFormValues) => void
+  onUpdate?: (id: string, values: { title: string; description?: string; status: string }) => void
+  onDelete?: (id: string) => void
   isLoading?: boolean
+  isUpdating?: boolean
+  isDeleting?: boolean
 }
 
 export function AgentCreationForm({
   defaultValues,
+  initialAgent,
   allowedSkillIds = [],
   onSelectSkills,
   onSubmit,
+  onUpdate,
+  onDelete,
   isLoading = false,
+  isUpdating = false,
+  isDeleting = false,
 }: AgentCreationFormProps) {
+  const isEditMode = !!initialAgent?.id
+
   const {
     register,
     handleSubmit,
     formState: { errors },
     setValue,
     watch,
+    reset,
   } = useForm<AgentFormValues>({
     resolver: zodResolver(agentFormSchema),
     defaultValues: {
@@ -66,8 +82,38 @@ export function AgentCreationForm({
     },
   })
 
+  useEffect(() => {
+    if (initialAgent) {
+      reset({
+        name: initialAgent.title,
+        role_instructions: initialAgent.description ?? '',
+        tone: 'professional',
+        memory_scope: 'conversation',
+      })
+    } else {
+      reset({
+        name: '',
+        role_instructions: '',
+        tone: 'professional',
+        memory_scope: 'conversation',
+      })
+    }
+  }, [initialAgent?.id, initialAgent?.title, initialAgent?.description, reset])
+
   const tone = watch('tone')
   const memory_scope = watch('memory_scope')
+
+  const handleFormSubmit = (values: AgentFormValues) => {
+    if (isEditMode && initialAgent && onUpdate) {
+      onUpdate(initialAgent.id, {
+        title: values.name,
+        description: values.role_instructions || undefined,
+        status: initialAgent.status,
+      })
+    } else if (onSubmit) {
+      onSubmit(values)
+    }
+  }
 
   return (
     <Card className="transition-all duration-300 hover:shadow-card-hover">
@@ -84,7 +130,7 @@ export function AgentCreationForm({
       </CardHeader>
       <CardContent>
         <form
-          onSubmit={onSubmit ? handleSubmit(onSubmit) : (e) => e.preventDefault()}
+          onSubmit={handleFormSubmit ? handleSubmit(handleFormSubmit) : (e) => e.preventDefault()}
           className="space-y-4"
         >
           <div className="space-y-2">
@@ -174,10 +220,33 @@ export function AgentCreationForm({
               </Button>
             </div>
           </div>
-          {onSubmit && (
-            <Button type="submit" disabled={isLoading} className="mt-2">
-              {isLoading ? 'Saving…' : 'Save agent'}
-            </Button>
+          {(onSubmit || onUpdate) && (
+            <div className="mt-4 flex flex-wrap items-center gap-2">
+              <Button
+                type="submit"
+                disabled={isLoading || isUpdating}
+                className="transition-transform duration-200 hover:scale-[1.02]"
+              >
+                {isEditMode
+                  ? isUpdating
+                    ? 'Updating…'
+                    : 'Update agent'
+                  : isLoading
+                    ? 'Saving…'
+                    : 'Save agent'}
+              </Button>
+              {isEditMode && onDelete && initialAgent && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="text-destructive border-destructive/50 hover:bg-destructive/10 transition-transform duration-200 hover:scale-[1.02]"
+                  disabled={isDeleting}
+                  onClick={() => onDelete(initialAgent.id)}
+                >
+                  {isDeleting ? 'Deleting…' : 'Delete agent'}
+                </Button>
+              )}
+            </div>
           )}
         </form>
       </CardContent>

@@ -94,7 +94,7 @@ export function ContentCalendar({
         </div>
       </CardHeader>
       <CardContent>
-        <div className="rounded-lg border border-border overflow-hidden">
+        <div className="rounded-lg border border-border overflow-hidden" aria-label="Content calendar month view">
           <div className="grid grid-cols-7 border-b border-border bg-card-secondary">
             {DAYS.map((day) => (
               <div
@@ -116,6 +116,7 @@ export function ContentCalendar({
               return (
                 <div
                   key={key}
+                  aria-label={`Drop zone for ${key}`}
                   className={cn(
                     'min-h-[60px] border-b border-r border-border p-1 last:border-r-0',
                     'flex flex-col gap-1 transition-colors hover:bg-card-secondary/50'
@@ -132,6 +133,7 @@ export function ContentCalendar({
                     <div
                       key={post.id}
                       draggable
+                      aria-label={`Scheduled post: ${post.title}, ${PLATFORM_LABELS[post.platform]}. Drag to reschedule.`}
                       onDragStart={(e) => {
                         e.dataTransfer.setData('postId', post.id)
                         e.dataTransfer.setData('date', key)

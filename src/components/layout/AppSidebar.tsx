@@ -27,7 +27,7 @@ const navItems = [
   { to: '/dashboard/research', label: 'Research & Knowledge Base', icon: BookOpen },
   { to: '/dashboard/personal', label: 'Calendar & Travel', icon: Calendar },
   { to: '/dashboard/finance', label: 'Finance', icon: Wallet },
-  { to: '/dashboard/agents', label: 'Agent Builder', icon: Bot },
+  { to: '/dashboard/agents', label: 'Agent Builder & Skills', icon: Bot },
   { to: '/dashboard/settings', label: 'Settings', icon: Settings },
 ]
 

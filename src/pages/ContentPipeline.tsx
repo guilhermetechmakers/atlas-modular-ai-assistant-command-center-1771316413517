@@ -221,7 +221,7 @@ export function ContentPipelinePage() {
   }, [])
 
   return (
-    <div className="space-y-6 animate-fade-in-up">
+    <div className="space-y-6 animate-fade-in-up motion-reduce:animate-none" role="main">
       <nav aria-label="Breadcrumb" className="flex items-center gap-1 text-sm text-muted-foreground">
         <Link
           to="/dashboard"
@@ -234,7 +234,7 @@ export function ContentPipelinePage() {
       </nav>
 
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
+        <div className="rounded-card-lg border border-border bg-card-secondary/50 bg-gradient-to-br from-primary/5 via-transparent to-transparent p-4">
           <h1 className="text-2xl font-bold tracking-tight text-foreground md:text-3xl">
             Content Pipeline
           </h1>
@@ -274,7 +274,7 @@ export function ContentPipelinePage() {
           </CardHeader>
           <CardContent className="space-y-3">
             {showPipelineForm && (
-              <div className="flex flex-wrap items-end gap-2 rounded-lg border border-border bg-card-secondary/50 p-3 animate-fade-in">
+              <div className="flex flex-wrap items-end gap-2 rounded-lg border border-border bg-card-secondary/50 p-3 animate-fade-in motion-reduce:animate-none">
                 <div className="flex-1 min-w-[180px] space-y-1">
                   <Label htmlFor="pipeline-title" className="text-xs">Title</Label>
                   <Input
@@ -345,7 +345,7 @@ export function ContentPipelinePage() {
           </CardHeader>
           <CardContent>
             {showPipelineForm ? (
-              <div className="flex flex-wrap items-end gap-2 rounded-lg border border-border bg-card-secondary/50 p-3 animate-fade-in">
+              <div className="flex flex-wrap items-end gap-2 rounded-lg border border-border bg-card-secondary/50 p-3 animate-fade-in motion-reduce:animate-none">
                 <div className="flex-1 min-w-[180px] space-y-1">
                   <Label htmlFor="pipeline-title-empty" className="text-xs">Title</Label>
                   <Input
@@ -370,17 +370,17 @@ export function ContentPipelinePage() {
         </Card>
       )}
 
-      <Tabs defaultValue="ideas" className="w-full">
-        <TabsList className="flex flex-wrap h-auto gap-1 p-1 bg-card-secondary border border-border">
-          <TabsTrigger value="ideas">Ideas</TabsTrigger>
-          <TabsTrigger value="drafts">Drafts</TabsTrigger>
-          <TabsTrigger value="calendar">Calendar</TabsTrigger>
-          <TabsTrigger value="assets">Assets</TabsTrigger>
-          <TabsTrigger value="repurpose">Repurpose</TabsTrigger>
-          <TabsTrigger value="schedule">Publishing</TabsTrigger>
+      <Tabs defaultValue="ideas" className="w-full" aria-label="Content pipeline sections">
+        <TabsList className="flex flex-wrap h-auto gap-1 p-1 bg-card-secondary border border-border" aria-label="Pipeline sections">
+          <TabsTrigger value="ideas" id="ideas-tab" aria-controls="ideas-panel">Ideas</TabsTrigger>
+          <TabsTrigger value="drafts" id="drafts-tab" aria-controls="drafts-panel">Drafts</TabsTrigger>
+          <TabsTrigger value="calendar" id="calendar-tab" aria-controls="calendar-panel">Calendar</TabsTrigger>
+          <TabsTrigger value="assets" id="assets-tab" aria-controls="assets-panel">Assets</TabsTrigger>
+          <TabsTrigger value="repurpose" id="repurpose-tab" aria-controls="repurpose-panel">Repurpose</TabsTrigger>
+          <TabsTrigger value="schedule" id="schedule-tab" aria-controls="schedule-panel">Publishing</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="ideas" className="mt-6">
+        <TabsContent value="ideas" id="ideas-panel" className="mt-6" aria-labelledby="ideas-tab">
           <IdeasList
             ideas={ideas}
             isLoading={isLoading}
@@ -389,7 +389,7 @@ export function ContentPipelinePage() {
           />
         </TabsContent>
 
-        <TabsContent value="drafts" className="mt-6 space-y-6">
+        <TabsContent value="drafts" id="drafts-panel" className="mt-6 space-y-6" aria-labelledby="drafts-tab">
           <div className="grid gap-6 lg:grid-cols-3">
             <Card className="lg:col-span-1">
               <CardHeader className="flex flex-row items-center justify-between space-y-0">
@@ -434,7 +434,7 @@ export function ContentPipelinePage() {
           </div>
         </TabsContent>
 
-        <TabsContent value="calendar" className="mt-6">
+        <TabsContent value="calendar" id="calendar-panel" className="mt-6" aria-labelledby="calendar-tab">
           <ContentCalendar
             posts={calendarPosts}
             isLoading={isLoading}
@@ -443,7 +443,7 @@ export function ContentPipelinePage() {
           />
         </TabsContent>
 
-        <TabsContent value="assets" className="mt-6">
+        <TabsContent value="assets" id="assets-panel" className="mt-6" aria-labelledby="assets-tab">
           <AssetManager
             assets={assets}
             isLoading={isLoading}
@@ -452,11 +452,11 @@ export function ContentPipelinePage() {
           />
         </TabsContent>
 
-        <TabsContent value="repurpose" className="mt-6">
+        <TabsContent value="repurpose" id="repurpose-panel" className="mt-6" aria-labelledby="repurpose-tab">
           <RepurposeTool sourceContent={selectedDraft?.content} isLoading={isLoading} />
         </TabsContent>
 
-        <TabsContent value="schedule" className="mt-6">
+        <TabsContent value="schedule" id="schedule-panel" className="mt-6" aria-labelledby="schedule-tab">
           <PublishingScheduler
             scheduled={scheduled}
             isLoading={isLoading}

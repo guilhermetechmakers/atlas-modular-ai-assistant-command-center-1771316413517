@@ -139,7 +139,7 @@ export function DraftEditor({
       </CardHeader>
       <CardContent className="space-y-4">
         {showVersions && draft.versions.length > 0 && (
-          <div className="rounded-lg border border-border bg-card-secondary/50 p-4 space-y-2 animate-fade-in">
+          <div className="rounded-lg border border-border bg-card-secondary/50 p-4 space-y-2 animate-fade-in motion-reduce:animate-none">
             <p className="text-sm font-medium text-foreground">Version history</p>
             <ul className="space-y-1 max-h-32 overflow-y-auto">
               {draft.versions.map((v) => (
@@ -219,7 +219,7 @@ export function DraftEditor({
               </Button>
             </div>
             {showSchedule && (
-              <div className="flex flex-wrap items-end gap-3 pt-2 animate-fade-in">
+              <div className="flex flex-wrap items-end gap-3 pt-2 animate-fade-in motion-reduce:animate-none">
                 <div className="space-y-1">
                   <Label htmlFor="schedule-date" className="text-xs">Date</Label>
                   <Input

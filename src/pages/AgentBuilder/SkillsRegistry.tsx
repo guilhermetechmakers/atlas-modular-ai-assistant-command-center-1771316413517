@@ -12,6 +12,8 @@ import {
 import {
   useAgentBuilderSkillsRegistries,
   useCreateAgentBuilderSkillsRegistry,
+  useUpdateAgentBuilderSkillsRegistry,
+  useDeleteAgentBuilderSkillsRegistry,
 } from '@/hooks/useAgentBuilderSkillsRegistry'
 import type { AgentFormValues } from '@/components/agent-builder-skills-registry'
 import type {
@@ -72,6 +74,9 @@ export default function SkillsRegistryPage() {
     refetch: refetchRegistries,
   } = useAgentBuilderSkillsRegistries()
   const createMutation = useCreateAgentBuilderSkillsRegistry()
+  const updateMutation = useUpdateAgentBuilderSkillsRegistry()
+  const deleteMutation = useDeleteAgentBuilderSkillsRegistry()
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null)
 
   const [selectedAgentId, setSelectedAgentId] = useState<string | null>(null)
   const [allowedSkillIds, setAllowedSkillIds] = useState<string[]>([])
@@ -136,6 +141,45 @@ export default function SkillsRegistryPage() {
       )
     },
     [createMutation]
+  )
+
+  const handleAgentUpdate = useCallback(
+    (id: string, values: { title: string; description?: string; status: string }) => {
+      updateMutation.mutate(
+        { id, data: { title: values.title, description: values.description, status: values.status } },
+        { onSuccess: () => toast.success('Agent updated') }
+      )
+    },
+    [updateMutation]
+  )
+
+  const handleAgentDelete = useCallback(
+    (id: string) => {
+      deleteMutation.mutate(id, {
+        onSuccess: () => {
+          setDeleteConfirmId(null)
+          if (selectedAgentId === id) {
+            const remaining = registries.filter((r) => r.id !== id)
+            setSelectedAgentId(remaining[0]?.id ?? null)
+            if (approvalPolicy?.agent_id === id) {
+              const next = remaining[0]
+              setApprovalPolicy(
+                next
+                  ? {
+                      agent_id: next.id,
+                      human_in_loop: false,
+                      require_approval_for_skills: [],
+                      rate_limit_requests_per_minute: 10,
+                      rate_limit_requests_per_day: 500,
+                    }
+                  : null
+              )
+            }
+          }
+        },
+      })
+    },
+    [deleteMutation, selectedAgentId, registries, approvalPolicy]
   )
 
   const handleToggleSkill = useCallback((skillId: string) => {
@@ -270,7 +314,7 @@ export default function SkillsRegistryPage() {
         <ChevronRight className="h-4 w-4 shrink-0" aria-hidden />
         <span className="text-foreground font-medium">Agent Builder</span>
       </nav>
-      <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between rounded-card-lg border border-primary/20 bg-gradient-to-br from-primary/5 to-transparent p-6">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-foreground md:text-3xl">
             Agent Builder & Skills Registry
@@ -303,6 +347,7 @@ export default function SkillsRegistryPage() {
               className="rounded-lg border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 min-w-[180px]"
               aria-label="Select agent"
             >
+              <option value="">Create new agent…</option>
               {registries.map((r) => (
                 <option key={r.id} value={r.id}>
                   {r.title}
@@ -314,18 +359,29 @@ export default function SkillsRegistryPage() {
       </header>
 
       {registries.length === 0 && (
-        <div className="rounded-card-lg border border-dashed border-border bg-card-secondary/50 p-6 flex flex-col items-center justify-center text-center gap-3">
-          <Bot className="h-12 w-12 text-muted-foreground" aria-hidden />
-          <p className="text-sm text-muted-foreground max-w-sm">No agents yet. Create your first agent below to get started.</p>
+        <div className="rounded-card-lg border border-dashed border-border bg-card-secondary/50 p-8 flex flex-col items-center justify-center text-center gap-4">
+          <Bot className="h-14 w-14 text-muted-foreground" aria-hidden />
+          <div>
+            <p className="font-medium text-foreground">No agents yet</p>
+            <p className="text-sm text-muted-foreground mt-1 max-w-sm">
+              Create your first agent below to configure name, role, tone, memory scope, and assign skills from the registry.
+            </p>
+          </div>
+          <p className="text-xs text-muted-foreground">Use the form in the next section to get started.</p>
         </div>
       )}
 
       <div className="grid gap-6 lg:grid-cols-2">
         <AgentCreationForm
+          initialAgent={selectedAgent ?? null}
           allowedSkillIds={allowedSkillIds}
           onSelectSkills={openSkillPicker}
           onSubmit={handleAgentFormSubmit}
+          onUpdate={handleAgentUpdate}
+          onDelete={(id) => setDeleteConfirmId(id)}
           isLoading={createMutation.isPending}
+          isUpdating={updateMutation.isPending}
+          isDeleting={deleteMutation.isPending}
         />
         <ApprovalPolicySettings
           policy={policyForAgent}
@@ -404,6 +460,34 @@ export default function SkillsRegistryPage() {
             </Button>
             <Button onClick={confirmSkillPicker} className="transition-transform duration-200 hover:scale-[1.02]">
               Confirm
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={!!deleteConfirmId} onOpenChange={(open) => !open && setDeleteConfirmId(null)}>
+        <DialogContent showClose={true}>
+          <DialogHeader>
+            <DialogTitle>Delete agent</DialogTitle>
+            <DialogDescription>
+              This will permanently remove this agent. Memory and approval settings for this agent will be lost. This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setDeleteConfirmId(null)}
+              className="transition-transform duration-200 hover:scale-[1.02]"
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              disabled={deleteMutation.isPending}
+              onClick={() => deleteConfirmId && handleAgentDelete(deleteConfirmId)}
+              className="transition-transform duration-200 hover:scale-[1.02]"
+            >
+              {deleteMutation.isPending ? 'Deleting…' : 'Delete'}
             </Button>
           </DialogFooter>
         </DialogContent>

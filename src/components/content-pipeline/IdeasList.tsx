@@ -82,7 +82,7 @@ export function IdeasList({
         {showForm && (
           <form
             onSubmit={handleSubmit}
-            className="rounded-lg border border-border bg-card-secondary/50 p-4 space-y-3 animate-fade-in"
+            className="rounded-lg border border-border bg-card-secondary/50 p-4 space-y-3 animate-fade-in motion-reduce:animate-none"
           >
             <div className="space-y-2">
               <Label htmlFor="idea-title">Idea</Label>
