@@ -150,6 +150,7 @@ export function Security({
                   onChange={(e) => setCurrentPassword(e.target.value)}
                   required
                   autoComplete="current-password"
+                  className="focus-visible:ring-2 focus-visible:ring-ring"
                 />
               </div>
               <div className="space-y-2">
@@ -162,6 +163,7 @@ export function Security({
                   required
                   minLength={8}
                   autoComplete="new-password"
+                  className="focus-visible:ring-2 focus-visible:ring-ring"
                 />
               </div>
               <div className="space-y-2">
@@ -173,6 +175,7 @@ export function Security({
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   required
                   autoComplete="new-password"
+                  className="focus-visible:ring-2 focus-visible:ring-ring"
                 />
               </div>
               <div className="flex gap-2">
@@ -220,7 +223,15 @@ export function Security({
             API keys
           </h4>
           {apiKeys.length === 0 ? (
-            <p className="text-sm text-muted-foreground">No API keys yet. Create one from the API section.</p>
+            <div className="flex items-start gap-3 rounded-lg border border-border bg-card-secondary/50 p-4">
+              <Key className="h-5 w-5 shrink-0 text-muted-foreground" aria-hidden />
+              <div>
+                <p className="text-sm font-medium text-foreground">No API keys yet</p>
+                <p className="text-sm text-muted-foreground mt-0.5">
+                  Create an API key from the API or developer section when available to access Atlas programmatically.
+                </p>
+              </div>
+            </div>
           ) : (
             <ul className="space-y-2">
               {apiKeys.map((key) => (
@@ -256,7 +267,15 @@ export function Security({
             Active sessions
           </h4>
           {sessions.length === 0 ? (
-            <p className="text-sm text-muted-foreground">No other sessions.</p>
+            <div className="flex items-start gap-3 rounded-lg border border-border bg-card-secondary/50 p-4">
+              <Monitor className="h-5 w-5 shrink-0 text-muted-foreground" aria-hidden />
+              <div>
+                <p className="text-sm font-medium text-foreground">Only this device</p>
+                <p className="text-sm text-muted-foreground mt-0.5">
+                  You are signed in only on this device. Other sessions will appear here if you log in elsewhere.
+                </p>
+              </div>
+            </div>
           ) : (
             <ul className="space-y-2">
               {sessions.map((session) => (

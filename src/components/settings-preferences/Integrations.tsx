@@ -86,6 +86,11 @@ export function Integrations({
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
+        {integrations.length === 0 && (
+          <p className="rounded-lg border border-border bg-muted/30 px-4 py-3 text-sm text-muted-foreground">
+            No integrations connected yet. Connect GitHub or Google Calendar below to sync repos and calendar.
+          </p>
+        )}
         <div className="space-y-3">
           {(['github', 'google_calendar'] as const).map((provider) => {
             const meta = providerMeta[provider]

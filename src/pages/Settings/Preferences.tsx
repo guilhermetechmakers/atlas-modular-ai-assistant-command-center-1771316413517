@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import { Link } from 'react-router-dom'
 import { User, Link2, Shield, CreditCard, Download, BookOpen, RefreshCw } from 'lucide-react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import {
@@ -77,7 +78,7 @@ export function PreferencesPage() {
     <div className="space-y-6 animate-fade-in-up motion-reduce:animate-none">
       <div>
         <nav aria-label="Breadcrumb" className="text-sm text-muted-foreground mb-2">
-          <a href="/dashboard" className="hover:text-foreground transition-colors">Dashboard</a>
+          <Link to="/dashboard" className="hover:text-foreground transition-colors">Dashboard</Link>
           <span className="mx-2" aria-hidden>/</span>
           <span className="text-foreground">Settings</span>
         </nav>
@@ -110,8 +111,8 @@ export function PreferencesPage() {
         </Card>
       )}
 
-      <Tabs defaultValue="profile" className="w-full">
-        <TabsList className="flex h-auto flex-wrap gap-1 border-border bg-card-secondary p-2">
+      <Tabs defaultValue="profile" className="w-full" aria-label="Settings sections">
+        <TabsList className="flex h-auto flex-wrap gap-1 border-border bg-card-secondary p-2" role="tablist" aria-label="Preferences sections">
           <TabsTrigger value="profile" className="gap-2">
             <User className="h-4 w-4" />
             Profile
