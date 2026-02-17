@@ -16,6 +16,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
   DialogFooter,
 } from '@/components/ui/dialog'
 import { Badge } from '@/components/ui/badge'
@@ -260,9 +261,12 @@ function CreateIssueDialog({ repo, onClose, onSubmit, isPending }: CreateIssueDi
   }
 
   return (
-    <DialogContent showClose className="max-w-lg">
+    <DialogContent showClose className="max-w-lg" aria-describedby="create-issue-desc">
       <DialogHeader>
         <DialogTitle>Create issue</DialogTitle>
+        <DialogDescription id="create-issue-desc">
+          Create a new issue in {repo}. Title is required; description is optional.
+        </DialogDescription>
         <p className="text-sm text-muted-foreground">Repo: {repo}</p>
       </DialogHeader>
       <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-4">

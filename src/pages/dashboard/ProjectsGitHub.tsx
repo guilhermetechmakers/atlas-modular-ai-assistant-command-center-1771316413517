@@ -4,8 +4,10 @@
  */
 import { useState, useCallback, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { ChevronRight } from 'lucide-react'
+import { ChevronRight, AlertCircle, RefreshCw } from 'lucide-react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Card, CardContent } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
 import {
   RepoSelector,
   RepoActivityFeed,
@@ -22,15 +24,39 @@ import {
   useCreateGitHubIssue,
 } from '@/hooks/useProjectsGitHub'
 import { toast } from 'sonner'
+
+const PAGE_TITLE = 'Projects (GitHub) | Atlas'
+const PAGE_DESCRIPTION = 'Connect GitHub, select repos, view issues and PRs, create issues, and manage roadmaps and boards.'
+
 export function ProjectsGitHubPage() {
   const [selectedRepo, setSelectedRepo] = useState<string | null>(null)
   const [activityFilterRepo, setActivityFilterRepo] = useState<string | null>(null)
   const [selectedIssueId, setSelectedIssueId] = useState<string | null>(null)
 
-  const { data: repos = [], isLoading: reposLoading } = useProjectsGitHubRepos()
-  const { data: activityRaw = [], isLoading: activityLoading } = useProjectsGitHubActivity(activityFilterRepo ?? undefined)
-  const { data: issues = [], isLoading: issuesLoading } = useProjectsGitHubIssues(selectedRepo ?? '', {})
-  const { data: milestones = [], isLoading: milestonesLoading } = useProjectsGitHubMilestones(selectedRepo ?? undefined)
+  const {
+    data: repos = [],
+    isLoading: reposLoading,
+    isError: reposError,
+    refetch: refetchRepos,
+  } = useProjectsGitHubRepos()
+  const {
+    data: activityRaw = [],
+    isLoading: activityLoading,
+    isError: activityError,
+    refetch: refetchActivity,
+  } = useProjectsGitHubActivity(activityFilterRepo ?? undefined)
+  const {
+    data: issues = [],
+    isLoading: issuesLoading,
+    isError: issuesError,
+    refetch: refetchIssues,
+  } = useProjectsGitHubIssues(selectedRepo ?? '', {})
+  const {
+    data: milestones = [],
+    isLoading: milestonesLoading,
+    isError: milestonesError,
+    refetch: refetchMilestones,
+  } = useProjectsGitHubMilestones(selectedRepo ?? undefined)
   const createIssue = useCreateGitHubIssue()
 
   const activity = Array.isArray(activityRaw) ? activityRaw : []
@@ -65,11 +91,26 @@ export function ProjectsGitHubPage() {
   }, [])
 
   useEffect(() => {
-    document.title = 'Projects (GitHub) | Atlas'
+    document.title = PAGE_TITLE
+    const metaDesc = document.querySelector('meta[name="description"]')
+    const prevContent = metaDesc?.getAttribute('content') ?? ''
+    if (metaDesc) metaDesc.setAttribute('content', PAGE_DESCRIPTION)
     return () => {
       document.title = 'Atlas'
+      if (metaDesc && prevContent) metaDesc.setAttribute('content', prevContent)
     }
   }, [])
+
+  const hasReposError = reposError
+  const hasSectionError = activityError || issuesError || milestonesError
+  const handleRetryAll = useCallback(() => {
+    refetchRepos()
+    refetchActivity()
+    if (selectedRepo) {
+      refetchIssues()
+      refetchMilestones()
+    }
+  }, [refetchRepos, refetchActivity, refetchIssues, refetchMilestones, selectedRepo])
 
   return (
     <div className="space-y-6 animate-fade-in-up motion-reduce:animate-none" role="main">
@@ -94,6 +135,34 @@ export function ProjectsGitHubPage() {
           </p>
         </div>
       </div>
+
+      {(hasReposError || hasSectionError) && (
+        <Card className="border-destructive/50 bg-destructive/5">
+          <CardContent className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-start gap-2">
+              <AlertCircle className="h-5 w-5 shrink-0 text-destructive" aria-hidden />
+              <div>
+                <p className="font-medium text-foreground">Something went wrong</p>
+                <p className="text-sm text-muted-foreground">
+                  {hasReposError
+                    ? 'Could not load repositories. Check your connection or GitHub OAuth.'
+                    : 'Some data could not be loaded.'}
+                </p>
+              </div>
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleRetryAll}
+              className="shrink-0 transition-transform duration-200 hover:scale-[1.02]"
+              aria-label="Retry loading data"
+            >
+              <RefreshCw className="mr-2 h-4 w-4" />
+              Retry
+            </Button>
+          </CardContent>
+        </Card>
+      )}
 
       <RepoSelector
         repos={repos}
@@ -172,3 +241,5 @@ export function ProjectsGitHubPage() {
     </div>
   )
 }
+
+export default ProjectsGitHubPage

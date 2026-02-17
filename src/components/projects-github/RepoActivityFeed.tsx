@@ -134,13 +134,14 @@ export function RepoActivityFeed({
 
         {filtered.length === 0 ? (
           <div
-            className="rounded-lg border border-dashed border-border p-6 text-center"
+            className="flex flex-col items-center justify-center rounded-lg border border-dashed border-border bg-card-secondary/30 p-8 text-center"
             role="status"
+            aria-label="No activity"
           >
-            <GitCommit className="mx-auto h-10 w-10 text-muted-foreground" aria-hidden />
-            <p className="mt-2 text-sm text-muted-foreground">No activity yet.</p>
-            <p className="text-xs text-muted-foreground">
-              Connect a repo and push commits, open PRs, or create issues.
+            <GitCommit className="mx-auto h-12 w-12 text-muted-foreground" aria-hidden />
+            <p className="mt-3 text-sm font-medium text-foreground">No activity yet</p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Connect a repo and push commits, open PRs, or create issues to see them here.
             </p>
           </div>
         ) : (
