@@ -35,13 +35,14 @@ export function AssetManager({
   onDelete,
 }: AssetManagerProps) {
   const [filterType, setFilterType] = useState<ContentAsset['type'] | 'all'>('all')
+  const [uploadType, setUploadType] = useState<ContentAsset['type']>('thumbnail')
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const filtered = filterType === 'all' ? assets : assets.filter((a) => a.type === filterType)
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files ? Array.from(e.target.files) : []
-    if (files.length && onUpload) onUpload(files, 'other')
+    if (files.length && onUpload) onUpload(files, uploadType)
     e.target.value = ''
   }
 
@@ -73,7 +74,19 @@ export function AssetManager({
           </CardTitle>
           <CardDescription>Upload and organize thumbnails, scripts, outlines.</CardDescription>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="text-xs text-muted-foreground">Upload as:</span>
+          {(['thumbnail', 'script', 'outline', 'other'] as const).map((t) => (
+            <Button
+              key={t}
+              variant={uploadType === t ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setUploadType(t)}
+              className="transition-transform duration-200 hover:scale-[1.02]"
+            >
+              {ASSET_TYPE_LABELS[t]}
+            </Button>
+          ))}
           <input
             ref={fileInputRef}
             type="file"

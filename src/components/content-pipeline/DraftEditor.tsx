@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { FileText, History, Sparkles, Save } from 'lucide-react'
+import { FileText, History, Sparkles, Save, CalendarClock } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -7,7 +7,16 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Skeleton } from '@/components/ui/skeleton'
 import { cn } from '@/lib/utils'
-import type { ContentDraft, DraftVersion } from '@/types/content-pipeline'
+import type { ContentDraft, DraftVersion, PlatformTag } from '@/types/content-pipeline'
+
+const PLATFORM_OPTIONS: { value: PlatformTag; label: string }[] = [
+  { value: 'twitter', label: 'Twitter' },
+  { value: 'linkedin', label: 'LinkedIn' },
+  { value: 'youtube', label: 'YouTube' },
+  { value: 'blog', label: 'Blog' },
+  { value: 'newsletter', label: 'Newsletter' },
+  { value: 'instagram', label: 'Instagram' },
+]
 
 export interface DraftEditorProps {
   draft: ContentDraft | null
@@ -16,6 +25,7 @@ export interface DraftEditorProps {
   onNewDraft?: () => void
   onRestoreVersion?: (draftId: string, version: DraftVersion) => void
   onAiAssist?: (draftId: string, prompt: string) => void
+  onSchedule?: (draftId: string, date: string, platform: PlatformTag) => void
 }
 
 export function DraftEditor({
@@ -25,12 +35,18 @@ export function DraftEditor({
   onNewDraft,
   onRestoreVersion,
   onAiAssist,
+  onSchedule,
 }: DraftEditorProps) {
   const [title, setTitle] = useState(draft?.title ?? '')
   const [content, setContent] = useState(draft?.content ?? '')
   const [showVersions, setShowVersions] = useState(false)
   const [aiPrompt, setAiPrompt] = useState('')
   const [isSaving, setIsSaving] = useState(false)
+  const [showSchedule, setShowSchedule] = useState(false)
+  const [scheduleDate, setScheduleDate] = useState(() =>
+    new Date().toISOString().slice(0, 10)
+  )
+  const [schedulePlatform, setSchedulePlatform] = useState<PlatformTag>('twitter')
 
   useEffect(() => {
     if (draft) {
@@ -185,6 +201,66 @@ export function DraftEditor({
             </Button>
           </div>
         </div>
+
+        {onSchedule && (
+          <div className="rounded-lg border border-border p-4 space-y-3">
+            <div className="flex items-center justify-between">
+              <Label className="flex items-center gap-2">
+                <CalendarClock className="h-4 w-4 text-primary" />
+                Schedule to calendar
+              </Label>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowSchedule((v) => !v)}
+                className="transition-transform duration-200 hover:scale-[1.02]"
+              >
+                {showSchedule ? 'Hide' : 'Schedule'}
+              </Button>
+            </div>
+            {showSchedule && (
+              <div className="flex flex-wrap items-end gap-3 pt-2 animate-fade-in">
+                <div className="space-y-1">
+                  <Label htmlFor="schedule-date" className="text-xs">Date</Label>
+                  <Input
+                    id="schedule-date"
+                    type="date"
+                    value={scheduleDate}
+                    onChange={(e) => setScheduleDate(e.target.value)}
+                    className="w-full min-w-[140px]"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-xs block">Platform</Label>
+                  <div className="flex flex-wrap gap-1">
+                    {PLATFORM_OPTIONS.map(({ value, label }) => (
+                      <Button
+                        key={value}
+                        variant={schedulePlatform === value ? 'default' : 'outline'}
+                        size="sm"
+                        onClick={() => setSchedulePlatform(value)}
+                        className="transition-transform duration-200 hover:scale-[1.02]"
+                      >
+                        {label}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+                <Button
+                  size="sm"
+                  onClick={() => {
+                    onSchedule(draft.id, scheduleDate, schedulePlatform)
+                    setShowSchedule(false)
+                  }}
+                  className="transition-transform duration-200 hover:scale-[1.02]"
+                >
+                  <CalendarClock className="mr-2 h-4 w-4" />
+                  Add to calendar
+                </Button>
+              </div>
+            )}
+          </div>
+        )}
       </CardContent>
     </Card>
   )

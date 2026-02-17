@@ -181,7 +181,7 @@ export function ContentPipelinePage() {
   }, [])
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-6 animate-fade-in-up">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-foreground md:text-3xl">
@@ -251,6 +251,7 @@ export function ContentPipelinePage() {
                 onNewDraft={handleNewDraft}
                 onRestoreVersion={handleRestoreVersion}
                 onAiAssist={handleAiAssist}
+                onSchedule={handleSchedule}
               />
             </div>
           </div>

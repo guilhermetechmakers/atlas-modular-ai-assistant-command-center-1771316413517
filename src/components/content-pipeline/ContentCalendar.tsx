@@ -120,6 +120,12 @@ export function ContentCalendar({
                     'min-h-[60px] border-b border-r border-border p-1 last:border-r-0',
                     'flex flex-col gap-1 transition-colors hover:bg-card-secondary/50'
                   )}
+                  onDragOver={(e) => e.preventDefault()}
+                  onDrop={(e) => {
+                    e.preventDefault()
+                    const postId = e.dataTransfer.getData('postId')
+                    if (postId) onDragDrop?.(postId, key)
+                  }}
                 >
                   <span className="text-xs text-muted-foreground">{d}</span>
                   {dayPosts.map((post) => (

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Copy, Sparkles, ChevronDown } from 'lucide-react'
+import { toast } from 'sonner'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
@@ -130,9 +131,25 @@ export function RepurposeTool({
                   'rounded-lg border border-border bg-card-secondary/50 p-4 transition-all duration-200 hover:border-primary/30'
                 )}
               >
-                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">
-                  {PLATFORMS.find((p) => p.value === platform)?.label ?? platform}
-                </p>
+                <div className="flex items-center justify-between gap-2 mb-2">
+                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                    {PLATFORMS.find((p) => p.value === platform)?.label ?? platform}
+                  </p>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="shrink-0 transition-transform duration-200 hover:scale-[1.02]"
+                    onClick={() => {
+                      navigator.clipboard.writeText(text).then(
+                        () => toast.success('Copied to clipboard'),
+                        () => toast.error('Failed to copy')
+                      )
+                    }}
+                  >
+                    <Copy className="mr-1.5 h-3.5 w-3.5" />
+                    Copy
+                  </Button>
+                </div>
                 <pre className="whitespace-pre-wrap text-sm text-foreground font-sans">{text}</pre>
               </div>
             ))}
