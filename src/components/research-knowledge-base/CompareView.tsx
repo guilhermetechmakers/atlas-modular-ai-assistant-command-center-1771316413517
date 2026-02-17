@@ -31,18 +31,18 @@ export function CompareView({
 }: CompareViewProps) {
   if (isLoading) {
     return (
-      <Card className="transition-all duration-300 hover:shadow-card-hover">
+      <Card className="rounded-xl border border-border bg-card shadow-card transition-all duration-300" aria-busy="true" aria-label="Loading compare view">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Columns className="h-5 w-5 text-primary" />
+            <Columns className="h-5 w-5 text-primary" aria-hidden />
             Compare
           </CardTitle>
           <CardDescription>Side-by-side comparison of saved items or analyses.</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid gap-4 md:grid-cols-2">
-            <Skeleton className="h-64 w-full rounded-lg" />
-            <Skeleton className="h-64 w-full rounded-lg" />
+            <Skeleton className="h-64 w-full rounded-xl" />
+            <Skeleton className="h-64 w-full rounded-xl" />
           </div>
         </CardContent>
       </Card>
@@ -50,14 +50,18 @@ export function CompareView({
   }
 
   const emptySlot = (
-    <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-border bg-card-secondary/30 py-12 text-center text-muted-foreground">
-      <FileText className="h-10 w-10 opacity-50" />
+    <div
+      className="flex flex-col items-center justify-center rounded-xl border border-dashed border-border bg-card-secondary/30 py-12 text-center text-muted-foreground"
+      role="status"
+    >
+      <FileText className="h-10 w-10 opacity-50" aria-hidden />
       <p className="mt-2 text-sm">Select an item to compare</p>
+      <p className="mt-1 text-xs text-muted-foreground/80">Use the Notes tab and set Left/Right from the current note.</p>
     </div>
   )
 
   return (
-    <Card className="transition-all duration-300 hover:shadow-card-hover">
+    <Card className="rounded-xl border border-border bg-card shadow-card transition-all duration-300 hover:shadow-card-hover">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Columns className="h-5 w-5 text-primary" />
@@ -79,8 +83,8 @@ export function CompareView({
             {left ? (
               <div
                 className={cn(
-                  'rounded-lg border border-border bg-card-secondary/50 p-4',
-                  'transition-all duration-200 hover:shadow-sm'
+                  'rounded-xl border border-border bg-card-secondary/50 p-4',
+                  'transition-all duration-200 hover:shadow-sm hover:border-primary/20'
                 )}
               >
                 <h4 className="font-medium text-foreground">{left.title}</h4>
@@ -107,8 +111,8 @@ export function CompareView({
             {right ? (
               <div
                 className={cn(
-                  'rounded-lg border border-border bg-card-secondary/50 p-4',
-                  'transition-all duration-200 hover:shadow-sm'
+                  'rounded-xl border border-border bg-card-secondary/50 p-4',
+                  'transition-all duration-200 hover:shadow-sm hover:border-primary/20'
                 )}
               >
                 <h4 className="font-medium text-foreground">{right.title}</h4>

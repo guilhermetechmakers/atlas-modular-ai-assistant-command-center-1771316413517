@@ -310,14 +310,15 @@ export function ResearchPage() {
       {apiError && (
         <div
           role="alert"
-          className="rounded-lg border border-border bg-muted/30 px-4 py-3 text-sm text-muted-foreground flex flex-wrap items-center justify-between gap-2"
+          className="rounded-xl border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-foreground flex flex-wrap items-center justify-between gap-2 shadow-sm"
         >
           <span>Using local notes only. Connect the API to sync with your knowledge base.</span>
           <Button
             variant="outline"
             size="sm"
             onClick={() => refetchNotes()}
-            className="shrink-0 transition-transform duration-200 hover:scale-[1.02]"
+            className="shrink-0 transition-transform duration-200 hover:scale-[1.02] focus-visible:ring-2 focus-visible:ring-ring"
+            aria-label="Retry API connection"
           >
             Retry connection
           </Button>
@@ -334,32 +335,44 @@ export function ResearchPage() {
         <span className="text-foreground font-medium">Research & Knowledge Base</span>
       </nav>
 
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="relative">
-          <div className="absolute -inset-1 bg-gradient-to-r from-primary/10 via-transparent to-atlas-cyan/10 rounded-lg blur-sm" aria-hidden />
+          <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 via-atlas-cyan/10 to-atlas-purple/10 rounded-xl blur-sm opacity-80" aria-hidden />
           <div className="relative">
             <h1 className="text-2xl font-bold tracking-tight text-foreground md:text-3xl">
               Research & Knowledge Base
             </h1>
-            <p className="mt-1 text-muted-foreground">
-              Save web clips, notes, summaries, and decisions. Tagging, search, and AI summarization with citations.
+            <p className="mt-1.5 text-muted-foreground text-base leading-relaxed max-w-2xl">
+              Save web clips, notes, summaries, and decisions. Tagging, search, and AI summarization with citations and change detection.
             </p>
           </div>
         </div>
-      </div>
+      </header>
 
       <Tabs defaultValue="notes" className="w-full">
-        <TabsList className="flex flex-wrap h-auto gap-1 p-1 bg-card-secondary border border-border rounded-lg">
-          <TabsTrigger value="notes" className="rounded-md transition-all duration-200 data-[state=active]:shadow-sm">
+        <TabsList className="flex flex-wrap h-auto gap-1 p-1.5 bg-card-secondary border border-border rounded-xl shadow-sm">
+          <TabsTrigger
+            value="notes"
+            className="rounded-lg px-4 py-2 transition-all duration-200 hover:bg-card data-[state=active]:bg-card data-[state=active]:shadow-sm data-[state=active]:border border-transparent data-[state=active]:border-border"
+          >
             Notes
           </TabsTrigger>
-          <TabsTrigger value="clipper" className="rounded-md transition-all duration-200 data-[state=active]:shadow-sm">
+          <TabsTrigger
+            value="clipper"
+            className="rounded-lg px-4 py-2 transition-all duration-200 hover:bg-card data-[state=active]:bg-card data-[state=active]:shadow-sm data-[state=active]:border border-transparent data-[state=active]:border-border"
+          >
             Web Clipper
           </TabsTrigger>
-          <TabsTrigger value="compare" className="rounded-md transition-all duration-200 data-[state=active]:shadow-sm">
+          <TabsTrigger
+            value="compare"
+            className="rounded-lg px-4 py-2 transition-all duration-200 hover:bg-card data-[state=active]:bg-card data-[state=active]:shadow-sm data-[state=active]:border border-transparent data-[state=active]:border-border"
+          >
             Compare
           </TabsTrigger>
-          <TabsTrigger value="settings" className="rounded-md transition-all duration-200 data-[state=active]:shadow-sm">
+          <TabsTrigger
+            value="settings"
+            className="rounded-lg px-4 py-2 transition-all duration-200 hover:bg-card data-[state=active]:bg-card data-[state=active]:shadow-sm data-[state=active]:border border-transparent data-[state=active]:border-border"
+          >
             Search
           </TabsTrigger>
         </TabsList>
@@ -387,7 +400,7 @@ export function ResearchPage() {
                 onRemoveSource={handleRemoveSource}
               />
               {selectedNote && (
-                <Card className="transition-all duration-300 hover:shadow-card-hover">
+                <Card className="rounded-xl border border-border bg-card shadow-card transition-all duration-300 hover:shadow-card-hover hover:border-primary/20">
                   <CardHeader className="pb-2">
                     <CardTitle className="text-base">Summarize</CardTitle>
                   </CardHeader>
@@ -408,19 +421,23 @@ export function ResearchPage() {
             <WebClipperIntegration onSaveClip={handleSaveClip} isLoading={isLoading} />
           </div>
           {savedClips.length > 0 && (
-            <Card className="max-w-xl border-primary/20 transition-all duration-300 hover:shadow-card-hover">
+            <Card className="max-w-xl rounded-xl border border-primary/20 bg-card shadow-card transition-all duration-300 hover:shadow-card-hover">
               <CardHeader className="pb-2">
                 <CardTitle className="text-base">Recently saved clips</CardTitle>
               </CardHeader>
               <CardContent>
                 <ul className="space-y-2" role="list">
-                  {savedClips.slice(0, 5).map((clip) => (
-                    <li key={clip.id}>
+                  {savedClips.slice(0, 5).map((clip, i) => (
+                    <li
+                      key={clip.id}
+                      className="animate-fade-in-up motion-reduce:animate-none"
+                      style={{ animationDelay: `${i * 50}ms`, animationFillMode: 'backwards' }}
+                    >
                       <a
                         href={clip.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-sm text-primary hover:underline line-clamp-1"
+                        className="text-sm text-primary hover:underline line-clamp-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded px-1 -mx-1"
                       >
                         {clip.title || clip.url}
                       </a>
@@ -439,6 +456,8 @@ export function ResearchPage() {
               size="sm"
               onClick={handleSelectForCompareLeft}
               disabled={!selectedNote}
+              className="transition-transform duration-200 hover:scale-[1.02]"
+              aria-label="Use current note as left panel"
             >
               Use current note as Left
             </Button>
@@ -447,6 +466,8 @@ export function ResearchPage() {
               size="sm"
               onClick={handleSelectForCompareRight}
               disabled={!selectedNote}
+              className="transition-transform duration-200 hover:scale-[1.02]"
+              aria-label="Use current note as right panel"
             >
               Use current note as Right
             </Button>
@@ -467,9 +488,9 @@ export function ResearchPage() {
               onToggle={setVectorSearchEnabled}
               disabled
             />
-            <Card className="border-dashed">
+            <Card className="rounded-xl border border-dashed border-border bg-card-secondary/30">
               <CardContent className="pt-6">
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-muted-foreground leading-relaxed">
                   Semantic search (embeddings/vector) will be available in a future release. For now, use the search and tag filters in the Notes tab.
                 </p>
               </CardContent>

@@ -47,10 +47,10 @@ export function WebClipperIntegration({
 
   if (isLoading) {
     return (
-      <Card className="transition-all duration-300 hover:shadow-card-hover">
+      <Card className="rounded-xl border border-border bg-card shadow-card transition-all duration-300" aria-busy="true" aria-label="Loading web clipper">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Link2 className="h-5 w-5 text-primary" />
+            <Link2 className="h-5 w-5 text-primary" aria-hidden />
             Web Clipper
           </CardTitle>
           <CardDescription>Save URLs with metadata and snapshots.</CardDescription>
@@ -64,7 +64,7 @@ export function WebClipperIntegration({
   }
 
   return (
-    <Card className="transition-all duration-300 hover:shadow-card-hover">
+    <Card className="rounded-xl border border-border bg-card shadow-card transition-all duration-300 hover:shadow-card-hover">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Link2 className="h-5 w-5 text-primary" />
@@ -120,6 +120,7 @@ export function WebClipperIntegration({
           <Button
             type="submit"
             className="transition-transform duration-200 hover:scale-[1.02]"
+            aria-label="Save web clip"
           >
             <Save className="mr-2 h-4 w-4" />
             Save clip

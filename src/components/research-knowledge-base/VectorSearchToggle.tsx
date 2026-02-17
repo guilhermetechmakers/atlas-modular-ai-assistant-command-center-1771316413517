@@ -24,14 +24,14 @@ export function VectorSearchToggle({
   return (
     <Card
       className={cn(
-        'transition-all duration-300',
+        'rounded-xl border border-border bg-card shadow-card transition-all duration-300 hover:shadow-card-hover',
         disabled && 'opacity-70',
         className
       )}
     >
       <CardHeader className="pb-2">
         <CardTitle className="flex items-center gap-2 text-base">
-          <Search className="h-4 w-4 text-primary" />
+          <Search className="h-4 w-4 text-primary" aria-hidden />
           Semantic search
         </CardTitle>
         <CardDescription>Use embeddings for vector search (coming soon).</CardDescription>
@@ -41,7 +41,7 @@ export function VectorSearchToggle({
           htmlFor="vector-search-toggle"
           className="flex items-center gap-2 text-sm cursor-pointer"
         >
-          <Sparkles className="h-4 w-4 text-muted-foreground" />
+          <Sparkles className="h-4 w-4 text-muted-foreground" aria-hidden />
           Embeddings / vector search
         </Label>
         <Switch
@@ -49,7 +49,7 @@ export function VectorSearchToggle({
           checked={enabled}
           onCheckedChange={onToggle}
           disabled={disabled}
-          aria-label="Toggle semantic search"
+          aria-label="Toggle semantic search (vector search)"
         />
       </CardContent>
     </Card>

@@ -60,10 +60,10 @@ export function NoteEditor({
 
   if (isLoading) {
     return (
-      <Card className="transition-all duration-300 hover:shadow-card-hover">
+      <Card className="rounded-xl border border-border bg-card shadow-card transition-all duration-300" aria-busy="true" aria-label="Loading note editor">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <FileText className="h-5 w-5 text-primary" />
+            <FileText className="h-5 w-5 text-primary" aria-hidden />
             Note
           </CardTitle>
           <CardDescription>Rich text with source attachments and citation metadata.</CardDescription>
@@ -78,17 +78,18 @@ export function NoteEditor({
 
   if (!note) {
     return (
-      <Card className="transition-all duration-300 border-dashed">
-        <CardContent className="flex flex-col items-center justify-center py-16 text-center">
-          <FileText className="h-12 w-12 text-muted-foreground/50" />
+      <Card className="rounded-xl border border-dashed border-border bg-card-secondary/30">
+        <CardContent className="flex flex-col items-center justify-center py-16 text-center" role="status">
+          <FileText className="h-12 w-12 text-muted-foreground/50" aria-hidden />
           <p className="mt-2 text-muted-foreground">Select a note or create one to edit.</p>
+          <p className="mt-1 text-sm text-muted-foreground/80">Use the list on the left or save a clip from Web Clipper.</p>
         </CardContent>
       </Card>
     )
   }
 
   return (
-    <Card className="transition-all duration-300 hover:shadow-card-hover">
+    <Card className="rounded-xl border border-border bg-card shadow-card transition-all duration-300 hover:shadow-card-hover">
       <CardHeader className="flex flex-row items-center justify-between space-y-0">
         <div>
           <CardTitle className="flex items-center gap-2">
@@ -129,6 +130,7 @@ export function NoteEditor({
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="Note title"
+            className="transition-colors duration-200 focus:border-primary"
           />
         </div>
         <div className="space-y-2">
@@ -144,6 +146,7 @@ export function NoteEditor({
             onChange={(e) => setContent(e.target.value)}
             placeholder="Write your note (Markdown supported)"
             className="min-h-[200px] font-mono text-sm transition-colors duration-200 focus:border-primary"
+            aria-label="Note content"
           />
         </div>
         <div className="space-y-2">

@@ -24,7 +24,7 @@ const navItems = [
   { to: '/dashboard/command-center', label: 'Command Center', icon: LayoutGrid },
   { to: '/dashboard/projects', label: 'Projects', icon: FolderGit2 },
   { to: '/content-pipeline', label: 'Content Pipeline', icon: FileText },
-  { to: '/dashboard/research', label: 'Research', icon: BookOpen },
+  { to: '/dashboard/research', label: 'Research & Knowledge Base', icon: BookOpen },
   { to: '/dashboard/personal', label: 'Calendar & Travel', icon: Calendar },
   { to: '/dashboard/finance', label: 'Finance', icon: Wallet },
   { to: '/dashboard/agents', label: 'Agent Builder', icon: Bot },

@@ -50,9 +50,10 @@ export function SummarizeButton({
       disabled={disabled || isLoading}
       onClick={handleClick}
       className={cn(
-        'transition-transform duration-200 hover:scale-[1.02]',
+        'transition-transform duration-200 hover:scale-[1.02] focus-visible:ring-2 focus-visible:ring-ring',
         className
       )}
+      aria-label={isLoading ? 'Summarizing…' : 'Run AI to create summarized note with citations'}
     >
       {isLoading ? (
         <Loader2 className="h-4 w-4 animate-spin" aria-hidden />

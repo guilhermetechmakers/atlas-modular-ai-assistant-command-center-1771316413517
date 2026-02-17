@@ -71,10 +71,10 @@ export function NotesList({
 
   if (isLoading) {
     return (
-      <Card className="transition-all duration-300 hover:shadow-card-hover">
+      <Card className="rounded-xl border border-border bg-card shadow-card transition-all duration-300" aria-busy="true" aria-label="Loading notes">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <FileText className="h-5 w-5 text-primary" />
+            <FileText className="h-5 w-5 text-primary" aria-hidden />
             Notes
           </CardTitle>
           <CardDescription>Filters, tags, and saved searches.</CardDescription>
@@ -93,7 +93,7 @@ export function NotesList({
   }
 
   return (
-    <Card className="transition-all duration-300 hover:shadow-card-hover">
+    <Card className="rounded-xl border border-border bg-card shadow-card transition-all duration-300 hover:shadow-card-hover">
       <CardHeader className="flex flex-row items-center justify-between space-y-0">
         <div>
           <CardTitle className="flex items-center gap-2">
@@ -174,22 +174,27 @@ export function NotesList({
         )}
 
         {filteredNotes.length === 0 ? (
-          <div className="rounded-lg border border-dashed border-border py-8 text-center text-muted-foreground">
-            <FileText className="mx-auto h-12 w-12 opacity-50" />
-            <p className="mt-2">
-              {notes.length === 0 ? 'No notes yet.' : 'No notes match your filters.'}
+          <div
+            className="rounded-xl border border-dashed border-border bg-card-secondary/30 py-10 px-4 text-center text-muted-foreground"
+            role="status"
+            aria-live="polite"
+          >
+            <FileText className="mx-auto h-12 w-12 opacity-50" aria-hidden />
+            <p className="mt-3 font-medium text-foreground/90">
+              {notes.length === 0 ? 'No notes yet' : 'No notes match your filters'}
             </p>
-            <p className="text-sm">
+            <p className="mt-1 text-sm">
               {notes.length === 0
-                ? 'Create a note or save a clip to get started.'
+                ? 'Create a note or save a clip from the Web Clipper tab to get started.'
                 : 'Try a different search or tag.'}
             </p>
             {notes.length === 0 && onNewNote && (
               <Button
                 variant="outline"
                 size="sm"
-                className="mt-3"
+                className="mt-4 transition-transform duration-200 hover:scale-[1.02]"
                 onClick={onNewNote}
+                aria-label="Create new note"
               >
                 <Plus className="mr-2 h-4 w-4" />
                 New note
@@ -208,11 +213,13 @@ export function NotesList({
                   type="button"
                   onClick={() => onSelectNote(note.id)}
                   className={cn(
-                    'group flex w-full flex-col gap-1 rounded-lg border border-border p-3 text-left transition-all duration-200',
-                    'hover:border-primary/30 hover:shadow-md hover:shadow-primary/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring',
+                    'group flex w-full flex-col gap-1 rounded-xl border border-border p-3 text-left transition-all duration-200',
+                    'hover:border-primary/30 hover:shadow-md hover:shadow-primary/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
                     selectedNoteId === note.id &&
                       'border-primary/50 bg-primary/10 shadow-sm'
                   )}
+                  aria-pressed={selectedNoteId === note.id}
+                  aria-label={note.title ? `Select note: ${note.title}` : 'Select untitled note'}
                 >
                   <span className="font-medium text-foreground line-clamp-1">
                     {note.title || 'Untitled'}
