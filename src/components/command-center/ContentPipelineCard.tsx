@@ -1,10 +1,9 @@
 import { Link } from 'react-router-dom'
-import { FileText, Calendar, Lightbulb, ArrowUpRight } from 'lucide-react'
+import { FileText, Lightbulb, ArrowUpRight } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useContentPipelineSummary } from '@/hooks/useCommandCenter'
-import { cn } from '@/lib/utils'
 
 export function ContentPipelineCard() {
   const { data, isLoading, isError } = useContentPipelineSummary()

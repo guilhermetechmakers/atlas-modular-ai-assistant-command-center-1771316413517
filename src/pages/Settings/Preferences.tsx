@@ -1,4 +1,5 @@
-import { User, Link2, Shield, CreditCard, Download, BookOpen } from 'lucide-react'
+import { useEffect } from 'react'
+import { User, Link2, Shield, CreditCard, Download, BookOpen, RefreshCw } from 'lucide-react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import {
   ProfileSettings,
@@ -19,11 +20,20 @@ import {
 } from '@/hooks/useSettingsPreferences'
 import { settingsPreferencesApi } from '@/api/settings-preferences'
 import { toast } from 'sonner'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import type { UserProfileForm } from '@/types/settings-preferences'
 
 export function PreferencesPage() {
   const queryClient = useQueryClient()
-  const { data: profile, isLoading: profileLoading } = useSettingsProfile()
+  const { data: profile, isLoading: profileLoading, isError: profileError, refetch: refetchProfile } = useSettingsProfile()
+
+  useEffect(() => {
+    document.title = 'Settings & Preferences | Atlas'
+    return () => {
+      document.title = 'Atlas'
+    }
+  }, [])
   const profileUpdate = useSettingsProfileUpdate()
   const { data: integrations = [], isLoading: integrationsLoading } = useSettingsIntegrations()
   const { data: apiKeys = [], isLoading: apiKeysLoading } = useSettingsApiKeys()
@@ -66,6 +76,11 @@ export function PreferencesPage() {
   return (
     <div className="space-y-6 animate-fade-in-up motion-reduce:animate-none">
       <div>
+        <nav aria-label="Breadcrumb" className="text-sm text-muted-foreground mb-2">
+          <a href="/dashboard" className="hover:text-foreground transition-colors">Dashboard</a>
+          <span className="mx-2" aria-hidden>/</span>
+          <span className="text-foreground">Settings</span>
+        </nav>
         <h1 className="text-2xl font-bold tracking-tight text-foreground md:text-3xl">
           Preferences
         </h1>
@@ -73,6 +88,27 @@ export function PreferencesPage() {
           Account details, avatar, workspace membership, integrations, security, and backup.
         </p>
       </div>
+
+      {profileError && (
+        <Card className="border-destructive/50 bg-destructive/5">
+          <CardHeader>
+            <CardTitle className="text-destructive">Could not load profile</CardTitle>
+            <CardDescription>
+              Something went wrong loading your profile. You can retry or continue to other tabs.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button
+              variant="outline"
+              onClick={() => refetchProfile()}
+              className="gap-2 transition-transform duration-200 hover:scale-[1.02]"
+            >
+              <RefreshCw className="h-4 w-4" />
+              Retry
+            </Button>
+          </CardContent>
+        </Card>
+      )}
 
       <Tabs defaultValue="profile" className="w-full">
         <TabsList className="flex h-auto flex-wrap gap-1 border-border bg-card-secondary p-2">

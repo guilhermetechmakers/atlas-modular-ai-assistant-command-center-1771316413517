@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { NavLink } from 'react-router-dom'
 import {
   LayoutDashboard,
+  LayoutGrid,
   FolderGit2,
   FileText,
   BookOpen,
@@ -20,7 +21,7 @@ import { Button } from '@/components/ui/button'
 
 const navItems = [
   { to: '/dashboard', label: 'Overview', icon: LayoutDashboard },
-  { to: '/dashboard/command-center', label: 'Command Center', icon: ClipboardList },
+  { to: '/dashboard/command-center', label: 'Command Center', icon: LayoutGrid },
   { to: '/dashboard/projects', label: 'Projects', icon: FolderGit2 },
   { to: '/content-pipeline', label: 'Content Pipeline', icon: FileText },
   { to: '/dashboard/research', label: 'Research', icon: BookOpen },

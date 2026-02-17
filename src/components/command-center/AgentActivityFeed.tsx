@@ -6,7 +6,6 @@ import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useAgentActivity } from '@/hooks/useCommandCenter'
 import { cn } from '@/lib/utils'
-import type { AgentActivityItem } from '@/types/command-center'
 
 export function AgentActivityFeed() {
   const { data: items = [], isLoading, isError } = useAgentActivity()

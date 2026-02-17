@@ -94,14 +94,20 @@ export function ProfileSettings({
     )
   }
 
+  const isEmptyProfile = !profile?.displayName?.trim() && !profile?.email?.trim()
+
   return (
-    <Card className="transition-all duration-300 hover:shadow-card-hover">
+    <Card className="transition-all duration-300 hover:shadow-card-hover border-primary/10">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <User className="h-5 w-5 text-primary" />
           Profile settings
         </CardTitle>
-        <CardDescription>Update your name, email, and avatar.</CardDescription>
+        <CardDescription>
+          {isEmptyProfile
+            ? 'Complete your profile so your workspace shows your name and avatar.'
+            : 'Update your name, email, and avatar.'}
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -154,7 +160,7 @@ export function ProfileSettings({
               placeholder="Your name"
               value={form.displayName}
               onChange={handleChange('displayName')}
-              className="transition-colors duration-200 focus:ring-2 focus:ring-ring"
+              className="transition-colors duration-200 focus:ring-2 focus:ring-ring focus-visible:outline-none"
             />
           </div>
 
@@ -169,7 +175,7 @@ export function ProfileSettings({
               placeholder="you@example.com"
               value={form.email}
               onChange={handleChange('email')}
-              className="transition-colors duration-200 focus:ring-2 focus:ring-ring"
+              className="transition-colors duration-200 focus:ring-2 focus:ring-ring focus-visible:outline-none"
             />
           </div>
 
