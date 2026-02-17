@@ -126,34 +126,53 @@ export function ResearchPage() {
       title: title || url,
       addedAt: new Date().toISOString(),
     }
-    setNotes((prev) =>
-      prev.map((n) =>
-        n.id !== noteId
-          ? n
-          : {
-              ...n,
-              sourceAttachments: [...n.sourceAttachments, attachment],
-              updatedAt: new Date().toISOString(),
-            }
-      )
-    )
+    setNotes((prev) => {
+      const inPrev = prev.find((n) => n.id === noteId)
+      if (inPrev) {
+        return prev.map((n) =>
+          n.id !== noteId
+            ? n
+            : {
+                ...n,
+                sourceAttachments: [...n.sourceAttachments, attachment],
+                updatedAt: new Date().toISOString(),
+              }
+        )
+      }
+      const fromMerged = mergedNotes.find((n) => n.id === noteId)
+      const updated = fromMerged
+        ? { ...fromMerged, sourceAttachments: [...fromMerged.sourceAttachments, attachment], updatedAt: new Date().toISOString() }
+        : null
+      if (updated) return [updated, ...prev]
+      return prev
+    })
     toast.success('Source added')
-  }, [])
+  }, [mergedNotes])
 
   const handleRemoveSource = useCallback((noteId: string, sourceId: string) => {
-    setNotes((prev) =>
-      prev.map((n) =>
-        n.id !== noteId
-          ? n
-          : {
-              ...n,
-              sourceAttachments: n.sourceAttachments.filter((s) => s.id !== sourceId),
-              updatedAt: new Date().toISOString(),
-            }
-      )
-    )
+    setNotes((prev) => {
+      const inPrev = prev.find((n) => n.id === noteId)
+      if (inPrev) {
+        return prev.map((n) =>
+          n.id !== noteId
+            ? n
+            : {
+                ...n,
+                sourceAttachments: n.sourceAttachments.filter((s) => s.id !== sourceId),
+                updatedAt: new Date().toISOString(),
+              }
+        )
+      }
+      const fromMerged = mergedNotes.find((n) => n.id === noteId)
+      const updated =
+        fromMerged
+          ? { ...fromMerged, sourceAttachments: fromMerged.sourceAttachments.filter((s) => s.id !== sourceId), updatedAt: new Date().toISOString() }
+          : null
+      if (updated) return [updated, ...prev]
+      return prev
+    })
     toast.success('Source removed')
-  }, [])
+  }, [mergedNotes])
 
   const handleSaveSearch = useCallback((name: string, query: string, tags: string[]) => {
     const saved: SavedSearch = {
@@ -233,7 +252,16 @@ export function ResearchPage() {
   }, [selectedNote])
 
   return (
-    <div className="space-y-6 animate-fade-in-up">
+    <div className="space-y-6 animate-fade-in-up motion-reduce:animate-none">
+      {apiError && (
+        <div
+          role="status"
+          aria-live="polite"
+          className="rounded-lg border border-border bg-muted/30 px-4 py-2 text-sm text-muted-foreground"
+        >
+          Using local notes only. Connect the API to sync with your knowledge base.
+        </div>
+      )}
       <nav aria-label="Breadcrumb" className="flex items-center gap-1 text-sm text-muted-foreground">
         <Link
           to="/dashboard"

@@ -53,6 +53,7 @@ function App() {
         <Route path="/terms" element={<TermsPage />} />
         <Route path="/500" element={<Error500Page />} />
         <Route path="/content-pipeline" element={<Navigate to="/dashboard/content" replace />} />
+        <Route path="/finance-cockpit" element={<Navigate to="/dashboard/finance" replace />} />
         <Route path="/personal-/-calendar-&-travel" element={<Navigate to="/dashboard/personal" replace />} />
         <Route path="/research-knowledge-base" element={<Navigate to="/dashboard/research" replace />} />
         <Route path="/research-&-knowledge-base" element={<Navigate to="/dashboard/research" replace />} />

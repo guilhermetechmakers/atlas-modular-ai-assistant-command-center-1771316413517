@@ -25,10 +25,18 @@ export function NotesList({
   selectedNoteId,
   onSelectNote,
   onNewNote,
+  onSaveSearch,
 }: NotesListProps) {
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedTag, setSelectedTag] = useState<string | null>(null)
   const [activeSavedSearchId, setActiveSavedSearchId] = useState<string | null>(null)
+
+  const handleSaveCurrentSearch = () => {
+    const name = window.prompt('Name this saved search')
+    if (name?.trim()) {
+      onSaveSearch?.(name.trim(), searchQuery, selectedTag ? [selectedTag] : [])
+    }
+  }
 
   const allTags = useMemo(() => {
     const set = new Set<string>()
@@ -38,7 +46,10 @@ export function NotesList({
 
   const filteredNotes = useMemo(() => {
     let list = notes
-    const q = searchQuery.trim().toLowerCase()
+    const q = (activeSavedSearchId
+      ? savedSearches.find((s) => s.id === activeSavedSearchId)?.query ?? searchQuery
+      : searchQuery
+    ).trim().toLowerCase()
     if (q) {
       list = list.filter(
         (n) =>
@@ -47,16 +58,13 @@ export function NotesList({
           n.tags.some((t) => t.toLowerCase().includes(q))
       )
     }
-    if (selectedTag) {
-      list = list.filter((n) => n.tags.includes(selectedTag))
-    }
-    if (activeSavedSearchId) {
-      const saved = savedSearches.find((s) => s.id === activeSavedSearchId)
-      if (saved?.filters.tags?.length) {
-        list = list.filter((n) =>
-          saved.filters.tags!.some((t) => n.tags.includes(t))
-        )
-      }
+    const tagFilter = activeSavedSearchId
+      ? savedSearches.find((s) => s.id === activeSavedSearchId)?.filters.tags
+      : selectedTag
+        ? [selectedTag]
+        : null
+    if (tagFilter?.length) {
+      list = list.filter((n) => tagFilter.some((t) => n.tags.includes(t)))
     }
     return list
   }, [notes, searchQuery, selectedTag, activeSavedSearchId, savedSearches])
@@ -105,15 +113,27 @@ export function NotesList({
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden />
           <Input
             placeholder="Search notes..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-9"
+            className="pl-9 transition-colors duration-200 focus:border-primary"
             aria-label="Search notes"
           />
         </div>
+        {onSaveSearch && (searchQuery.trim() || selectedTag) && (
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            className="w-full justify-start text-muted-foreground hover:text-foreground transition-colors duration-200"
+            onClick={handleSaveCurrentSearch}
+          >
+            <Bookmark className="mr-2 h-4 w-4 shrink-0" />
+            Save current search
+          </Button>
+        )}
 
         {savedSearches.length > 0 && (
           <div className="flex flex-wrap items-center gap-2">

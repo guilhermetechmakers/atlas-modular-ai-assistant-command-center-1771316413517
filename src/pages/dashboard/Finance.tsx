@@ -1,114 +1,163 @@
-import { Wallet, Upload, TrendingUp } from 'lucide-react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Skeleton } from '@/components/ui/skeleton'
+import { useState, useCallback, useEffect } from 'react'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import {
-  AreaChart,
-  Area,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-} from 'recharts'
+  TransactionsLedger,
+  InvoicesPanel,
+  BudgetRunwayChart,
+  FinanceAITools,
+  ExportImportControls,
+} from '@/components/finance-cockpit'
+import { toast } from 'sonner'
+import type {
+  FinanceTransaction,
+  FinanceInvoice,
+  InvoiceStatus,
+} from '@/types/finance-cockpit'
 
-const placeholderData = [
-  { month: 'Jan', value: 4000 },
-  { month: 'Feb', value: 3000 },
-  { month: 'Mar', value: 5000 },
-  { month: 'Apr', value: 4500 },
-  { month: 'May', value: 6000 },
-]
+function uuid() {
+  return crypto.randomUUID?.() ?? `id-${Date.now()}-${Math.random().toString(36).slice(2)}`
+}
 
 export function FinancePage() {
+  const [transactions, setTransactions] = useState<FinanceTransaction[]>([])
+  const [invoices, setInvoices] = useState<FinanceInvoice[]>([])
+  const [isLoading] = useState(false)
+
+  useEffect(() => {
+    document.title = 'Finance Cockpit | Atlas'
+    return () => {
+      document.title = 'Atlas'
+    }
+  }, [])
+
+  const handleAddTransaction = useCallback(
+    (tx: Omit<FinanceTransaction, 'id' | 'user_id' | 'created_at' | 'updated_at'>) => {
+      const now = new Date().toISOString()
+      setTransactions((prev) => [
+        {
+          ...tx,
+          id: uuid(),
+          created_at: now,
+          updated_at: now,
+        },
+        ...prev,
+      ])
+      toast.success('Transaction added')
+    },
+    []
+  )
+
+  const handleDeleteTransaction = useCallback((id: string) => {
+    setTransactions((prev) => prev.filter((t) => t.id !== id))
+    toast.success('Transaction removed')
+  }, [])
+
+  const handleImportCsv = useCallback(
+    (rows: Omit<FinanceTransaction, 'id' | 'user_id' | 'created_at' | 'updated_at'>[]) => {
+      const now = new Date().toISOString()
+      const newTx = rows.map((r) => ({
+        ...r,
+        id: uuid(),
+        created_at: now,
+        updated_at: now,
+      }))
+      setTransactions((prev) => [...newTx, ...prev])
+      toast.success(`${rows.length} transaction(s) imported`)
+    },
+    []
+  )
+
+  const handleAddInvoice = useCallback(
+    (inv: Omit<FinanceInvoice, 'id' | 'user_id' | 'created_at' | 'updated_at'>) => {
+      const now = new Date().toISOString()
+      setInvoices((prev) => [
+        {
+          ...inv,
+          id: uuid(),
+          created_at: now,
+          updated_at: now,
+        },
+        ...prev,
+      ])
+      toast.success('Invoice added')
+    },
+    []
+  )
+
+  const handleInvoiceStatusChange = useCallback((id: string, status: InvoiceStatus) => {
+    setInvoices((prev) =>
+      prev.map((i) => (i.id === id ? { ...i, status, updated_at: new Date().toISOString() } : i))
+    )
+    toast.success('Invoice updated')
+  }, [])
+
+  const handleDeleteInvoice = useCallback((id: string) => {
+    setInvoices((prev) => prev.filter((i) => i.id !== id))
+    toast.success('Invoice removed')
+  }, [])
+
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-6 animate-fade-in-up">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-white md:text-3xl">Finance Cockpit</h1>
-          <p className="mt-1 text-muted-foreground">Ledger, budget, runway, and AI analysis.</p>
+          <h1 className="text-2xl font-bold tracking-tight text-foreground md:text-3xl">
+            Finance Cockpit
+          </h1>
+          <p className="mt-1 text-muted-foreground">
+            Ledger-style view for CSV imports, categorization, invoicing, budgets, and runway.
+          </p>
         </div>
-        <Button variant="outline">
-          <Upload className="mr-2 h-4 w-4" />
-          Import CSV
-        </Button>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardDescription>Runway</CardDescription>
-            <CardTitle className="text-2xl">—</CardTitle>
-          </CardHeader>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardDescription>This month</CardDescription>
-            <CardTitle className="text-2xl">—</CardTitle>
-          </CardHeader>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardDescription>Budget</CardDescription>
-            <CardTitle className="text-2xl">—</CardTitle>
-          </CardHeader>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardDescription>Trend</CardDescription>
-            <CardTitle className="text-2xl flex items-center gap-1">
-              <TrendingUp className="h-5 w-5 text-atlas-cyan" /> —
-            </CardTitle>
-          </CardHeader>
-        </Card>
-      </div>
+      <Tabs defaultValue="ledger" className="w-full">
+        <TabsList className="flex h-auto flex-wrap gap-1 border border-border bg-card-secondary p-1">
+          <TabsTrigger value="ledger">Transactions</TabsTrigger>
+          <TabsTrigger value="invoices">Invoices</TabsTrigger>
+          <TabsTrigger value="budget">Budget & Runway</TabsTrigger>
+          <TabsTrigger value="ai">AI Tools</TabsTrigger>
+          <TabsTrigger value="export">Export / Import</TabsTrigger>
+        </TabsList>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Wallet className="h-5 w-5 text-primary" />
-            Budget & runway
-          </CardTitle>
-          <CardDescription>Income and expenses over time.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={placeholderData}>
-                <defs>
-                  <linearGradient id="fillValue" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="rgb(var(--primary))" stopOpacity={0.3} />
-                    <stop offset="100%" stopColor="rgb(var(--primary))" stopOpacity={0} />
-                  </linearGradient>
-                </defs>
-                <XAxis dataKey="month" stroke="rgb(var(--muted-foreground))" fontSize={12} />
-                <YAxis stroke="rgb(var(--muted-foreground))" fontSize={12} />
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: 'rgb(var(--card))',
-                    border: '1px solid rgb(var(--border))',
-                    borderRadius: '8px',
-                  }}
-                />
-                <Area type="monotone" dataKey="value" stroke="rgb(var(--primary))" fill="url(#fillValue)" strokeWidth={2} />
-              </AreaChart>
-            </ResponsiveContainer>
-          </div>
-        </CardContent>
-      </Card>
+        <TabsContent value="ledger" className="mt-6">
+          <TransactionsLedger
+            transactions={transactions}
+            isLoading={isLoading}
+            onAdd={handleAddTransaction}
+            onDelete={handleDeleteTransaction}
+            onImportCsv={handleImportCsv}
+          />
+        </TabsContent>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Transactions ledger</CardTitle>
-          <CardDescription>CSV import, categorize, and export.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-2">
-            <Skeleton className="h-10 w-full rounded" />
-            <Skeleton className="h-10 w-full rounded" />
-            <Skeleton className="h-10 w-full rounded" />
-          </div>
-        </CardContent>
-      </Card>
+        <TabsContent value="invoices" className="mt-6">
+          <InvoicesPanel
+            invoices={invoices}
+            isLoading={isLoading}
+            onAdd={handleAddInvoice}
+            onStatusChange={handleInvoiceStatusChange}
+            onDelete={handleDeleteInvoice}
+          />
+        </TabsContent>
+
+        <TabsContent value="budget" className="mt-6">
+          <BudgetRunwayChart transactions={transactions} isLoading={isLoading} />
+        </TabsContent>
+
+        <TabsContent value="ai" className="mt-6">
+          <FinanceAITools
+            transactions={transactions}
+            invoices={invoices}
+            isLoading={isLoading}
+          />
+        </TabsContent>
+
+        <TabsContent value="export" className="mt-6">
+          <ExportImportControls
+            transactions={transactions}
+            isLoading={isLoading}
+            onImport={handleImportCsv}
+          />
+        </TabsContent>
+      </Tabs>
     </div>
   )
 }
