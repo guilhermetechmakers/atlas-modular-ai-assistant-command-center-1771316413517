@@ -4,16 +4,26 @@
  * Used at /content-pipeline and /dashboard/content.
  */
 import { useState, useCallback, useEffect } from 'react'
-import { FileText, Plus } from 'lucide-react'
+import { Link } from 'react-router-dom'
+import { FileText, Plus, ChevronRight, FolderOpen, Trash2 } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { IdeasList } from '@/components/content-pipeline/IdeasList'
-import { DraftEditor } from '@/components/content-pipeline/DraftEditor'
-import { ContentCalendar } from '@/components/content-pipeline/ContentCalendar'
-import { AssetManager } from '@/components/content-pipeline/AssetManager'
-import { RepurposeTool } from '@/components/content-pipeline/RepurposeTool'
-import { PublishingScheduler } from '@/components/content-pipeline/PublishingScheduler'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import {
+  IdeasList,
+  DraftEditor,
+  ContentCalendar,
+  AssetManager,
+  RepurposeTool,
+  PublishingScheduler,
+} from '@/components/content-pipeline'
+import {
+  useContentPipelines,
+  useCreateContentPipeline,
+  useDeleteContentPipeline,
+} from '@/hooks/useContentPipeline'
 import { toast } from 'sonner'
 import type {
   ContentIdea,
@@ -37,8 +47,33 @@ export function ContentPipelinePage() {
   const [assets, setAssets] = useState<ContentAsset[]>([])
   const [scheduled, setScheduled] = useState<ScheduledItem[]>([])
   const [isLoading] = useState(false)
+  const [newPipelineTitle, setNewPipelineTitle] = useState('')
+  const [showPipelineForm, setShowPipelineForm] = useState(false)
+
+  const {
+    data: pipelineRecords = [],
+    isLoading: pipelinesLoading,
+    isError: pipelinesError,
+    refetch: refetchPipelines,
+  } = useContentPipelines()
+  const createPipeline = useCreateContentPipeline()
+  const deletePipeline = useDeleteContentPipeline()
 
   const selectedDraft = selectedDraftId ? drafts.find((d) => d.id === selectedDraftId) ?? null : null
+
+  const handleCreatePipeline = useCallback(() => {
+    const title = newPipelineTitle.trim()
+    if (!title) return
+    createPipeline.mutate(
+      { title, description: undefined, status: 'active' },
+      {
+        onSuccess: () => {
+          setNewPipelineTitle('')
+          setShowPipelineForm(false)
+        },
+      }
+    )
+  }, [newPipelineTitle, createPipeline])
 
   useEffect(() => {
     document.title = 'Content Pipeline | Atlas'
@@ -187,6 +222,17 @@ export function ContentPipelinePage() {
 
   return (
     <div className="space-y-6 animate-fade-in-up">
+      <nav aria-label="Breadcrumb" className="flex items-center gap-1 text-sm text-muted-foreground">
+        <Link
+          to="/dashboard"
+          className="transition-colors hover:text-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded"
+        >
+          Dashboard
+        </Link>
+        <ChevronRight className="h-4 w-4 shrink-0" aria-hidden />
+        <span className="text-foreground font-medium">Content Pipeline</span>
+      </nav>
+
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-foreground md:text-3xl">
@@ -197,6 +243,132 @@ export function ContentPipelinePage() {
           </p>
         </div>
       </div>
+
+      {pipelinesError && (
+        <Card className="border-destructive/50 bg-destructive/5">
+          <CardContent className="flex flex-col gap-3 pt-6 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-sm text-foreground">Could not load pipeline records.</p>
+            <Button variant="outline" size="sm" onClick={() => refetchPipelines()} className="shrink-0">
+              Retry
+            </Button>
+          </CardContent>
+        </Card>
+      )}
+
+      {!pipelinesError && pipelineRecords.length > 0 && (
+        <Card className="transition-all duration-300 hover:shadow-card-hover">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="flex items-center gap-2 text-base">
+              <FolderOpen className="h-4 w-4 text-primary" />
+              Pipeline records
+            </CardTitle>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => setShowPipelineForm((v) => !v)}
+              className="transition-transform duration-200 hover:scale-[1.02]"
+            >
+              <Plus className="mr-2 h-4 w-4" />
+              Add record
+            </Button>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {showPipelineForm && (
+              <div className="flex flex-wrap items-end gap-2 rounded-lg border border-border bg-card-secondary/50 p-3 animate-fade-in">
+                <div className="flex-1 min-w-[180px] space-y-1">
+                  <Label htmlFor="pipeline-title" className="text-xs">Title</Label>
+                  <Input
+                    id="pipeline-title"
+                    placeholder="Pipeline title"
+                    value={newPipelineTitle}
+                    onChange={(e) => setNewPipelineTitle(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && handleCreatePipeline()}
+                  />
+                </div>
+                <Button size="sm" onClick={handleCreatePipeline} disabled={!newPipelineTitle.trim() || createPipeline.isPending}>
+                  {createPipeline.isPending ? 'Saving…' : 'Save'}
+                </Button>
+                <Button size="sm" variant="ghost" onClick={() => { setShowPipelineForm(false); setNewPipelineTitle('') }}>
+                  Cancel
+                </Button>
+              </div>
+            )}
+            {pipelinesLoading ? (
+              <p className="text-sm text-muted-foreground">Loading…</p>
+            ) : (
+              <ul className="space-y-2">
+                {pipelineRecords.map((p) => (
+                  <li
+                    key={p.id}
+                    className="flex items-center justify-between gap-2 rounded-lg border border-border px-3 py-2 transition-all duration-200 hover:border-primary/30"
+                  >
+                    <div className="min-w-0 flex-1">
+                      <p className="font-medium text-foreground truncate">{p.title}</p>
+                      {p.description && (
+                        <p className="text-xs text-muted-foreground truncate">{p.description}</p>
+                      )}
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-muted-foreground hover:text-destructive shrink-0"
+                      onClick={() => deletePipeline.mutate(p.id)}
+                      disabled={deletePipeline.isPending}
+                      aria-label={`Delete ${p.title}`}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </CardContent>
+        </Card>
+      )}
+
+      {!pipelinesError && pipelineRecords.length === 0 && !pipelinesLoading && (
+        <Card className="transition-all duration-300 hover:shadow-card-hover">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="flex items-center gap-2 text-base">
+              <FolderOpen className="h-4 w-4 text-primary" />
+              Pipeline records
+            </CardTitle>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => setShowPipelineForm((v) => !v)}
+              className="transition-transform duration-200 hover:scale-[1.02]"
+            >
+              <Plus className="mr-2 h-4 w-4" />
+              Add record
+            </Button>
+          </CardHeader>
+          <CardContent>
+            {showPipelineForm ? (
+              <div className="flex flex-wrap items-end gap-2 rounded-lg border border-border bg-card-secondary/50 p-3 animate-fade-in">
+                <div className="flex-1 min-w-[180px] space-y-1">
+                  <Label htmlFor="pipeline-title-empty" className="text-xs">Title</Label>
+                  <Input
+                    id="pipeline-title-empty"
+                    placeholder="Pipeline title"
+                    value={newPipelineTitle}
+                    onChange={(e) => setNewPipelineTitle(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && handleCreatePipeline()}
+                  />
+                </div>
+                <Button size="sm" onClick={handleCreatePipeline} disabled={!newPipelineTitle.trim() || createPipeline.isPending}>
+                  {createPipeline.isPending ? 'Saving…' : 'Save'}
+                </Button>
+                <Button size="sm" variant="ghost" onClick={() => { setShowPipelineForm(false); setNewPipelineTitle('') }}>
+                  Cancel
+                </Button>
+              </div>
+            ) : (
+              <p className="text-sm text-muted-foreground">No saved pipeline records yet. Add one to track pipelines in the database.</p>
+            )}
+          </CardContent>
+        </Card>
+      )}
 
       <Tabs defaultValue="ideas" className="w-full">
         <TabsList className="flex flex-wrap h-auto gap-1 p-1 bg-card-secondary border border-border">
