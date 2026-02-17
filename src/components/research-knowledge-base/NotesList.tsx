@@ -198,14 +198,18 @@ export function NotesList({
           </div>
         ) : (
           <ul className="space-y-2" role="list">
-            {filteredNotes.map((note) => (
-              <li key={note.id}>
+            {filteredNotes.map((note, index) => (
+              <li
+                key={note.id}
+                className="animate-fade-in-up motion-reduce:animate-none"
+                style={{ animationDelay: `${Math.min(index * 50, 300)}ms`, animationFillMode: 'backwards' }}
+              >
                 <button
                   type="button"
                   onClick={() => onSelectNote(note.id)}
                   className={cn(
                     'group flex w-full flex-col gap-1 rounded-lg border border-border p-3 text-left transition-all duration-200',
-                    'hover:border-primary/30 hover:shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-ring',
+                    'hover:border-primary/30 hover:shadow-md hover:shadow-primary/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring',
                     selectedNoteId === note.id &&
                       'border-primary/50 bg-primary/10 shadow-sm'
                   )}

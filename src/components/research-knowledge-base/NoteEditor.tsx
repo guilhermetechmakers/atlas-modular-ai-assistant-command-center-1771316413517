@@ -1,18 +1,18 @@
 import { useState, useEffect } from 'react'
-import { FileText, Link2, Quote, Save, X } from 'lucide-react'
+import { FileText, Link2, Quote, Save, Trash2, X } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Skeleton } from '@/components/ui/skeleton'
-import { cn } from '@/lib/utils'
 import type { Note, SourceAttachment, Citation } from '@/types/research-knowledge-base'
 
 export interface NoteEditorProps {
   note: Note | null
   isLoading?: boolean
   onSave?: (noteId: string, payload: { title: string; content: string; tags: string[] }) => void
+  onDelete?: (noteId: string) => void
   onAddSource?: (noteId: string, url: string, title?: string) => void
   onRemoveSource?: (noteId: string, sourceId: string) => void
 }
@@ -21,6 +21,7 @@ export function NoteEditor({
   note,
   isLoading = false,
   onSave,
+  onDelete,
   onAddSource,
   onRemoveSource,
 }: NoteEditorProps) {
@@ -96,15 +97,29 @@ export function NoteEditor({
           </CardTitle>
           <CardDescription>Rich text with source attachments and citation metadata.</CardDescription>
         </div>
-        <Button
-          size="sm"
-          onClick={handleSave}
-          disabled={isSaving}
-          className="transition-transform duration-200 hover:scale-[1.02]"
-        >
-          <Save className="mr-2 h-4 w-4" />
-          {isSaving ? 'Saving…' : 'Save'}
-        </Button>
+        <div className="flex items-center gap-2">
+          {onDelete && (
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              className="text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors duration-200"
+              onClick={() => onDelete(note.id)}
+              aria-label="Delete note"
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
+          )}
+          <Button
+            size="sm"
+            onClick={handleSave}
+            disabled={isSaving}
+            className="transition-transform duration-200 hover:scale-[1.02]"
+          >
+            <Save className="mr-2 h-4 w-4" />
+            {isSaving ? 'Saving…' : 'Save'}
+          </Button>
+        </div>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="space-y-2">
@@ -117,13 +132,18 @@ export function NoteEditor({
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="note-content">Content</Label>
+          <div className="flex items-center justify-between">
+            <Label htmlFor="note-content">Content</Label>
+            <span className="text-xs text-muted-foreground tabular-nums" aria-live="polite">
+              {content.length} characters
+            </span>
+          </div>
           <Textarea
             id="note-content"
             value={content}
             onChange={(e) => setContent(e.target.value)}
             placeholder="Write your note (Markdown supported)"
-            className="min-h-[200px] font-mono text-sm"
+            className="min-h-[200px] font-mono text-sm transition-colors duration-200 focus:border-primary"
           />
         </div>
         <div className="space-y-2">

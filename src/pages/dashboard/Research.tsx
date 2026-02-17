@@ -11,7 +11,12 @@ import {
   CompareView,
   VectorSearchToggle,
 } from '@/components/research-knowledge-base'
-import { useResearchKnowledgeBases } from '@/hooks/useResearchKnowledgeBase'
+import {
+  useResearchKnowledgeBases,
+  useCreateResearchKnowledgeBase,
+  useUpdateResearchKnowledgeBase,
+  useDeleteResearchKnowledgeBase,
+} from '@/hooks/useResearchKnowledgeBase'
 import { toast } from 'sonner'
 import type {
   Note,
@@ -42,14 +47,19 @@ function mapApiToNote(r: { id: string; user_id: string; title: string; descripti
 
 export function ResearchPage() {
   const [notes, setNotes] = useState<Note[]>([])
-  const [clips, setClips] = useState<WebClip[]>([])
+  const [savedClips, setSavedClips] = useState<WebClip[]>([])
   const [savedSearches, setSavedSearches] = useState<SavedSearch[]>([])
   const [selectedNoteId, setSelectedNoteId] = useState<string | null>(null)
   const [compareLeft, setCompareLeft] = useState<{ id: string; title: string; content: string; meta?: string } | null>(null)
   const [compareRight, setCompareRight] = useState<{ id: string; title: string; content: string; meta?: string } | null>(null)
   const [vectorSearchEnabled, setVectorSearchEnabled] = useState(false)
 
-  const { data: apiList, isLoading: apiLoading, isError: apiError } = useResearchKnowledgeBases(undefined)
+  const { data: apiList, isLoading: apiLoading, isError: apiError, refetch: refetchNotes } = useResearchKnowledgeBases(undefined)
+  const createMutation = useCreateResearchKnowledgeBase()
+  const updateMutation = useUpdateResearchKnowledgeBase()
+  const deleteMutation = useDeleteResearchKnowledgeBase()
+
+  const apiNoteIds = useMemo(() => new Set(apiList?.map((r) => r.id) ?? []), [apiList])
 
   const mergedNotes = useMemo(() => {
     if (apiError || !apiList?.length) return notes
@@ -114,9 +124,53 @@ export function ResearchPage() {
         }
         return [updated, ...prev]
       })
-      toast.success('Note saved')
+
+      const isFromApi = apiNoteIds.has(noteId)
+      if (isFromApi) {
+        updateMutation.mutate({
+          id: noteId,
+          data: {
+            title: payload.title,
+            description: payload.content,
+            status: existing?.status ?? 'active',
+          },
+        })
+      } else {
+        createMutation.mutate(
+          {
+            title: payload.title,
+            description: payload.content,
+            status: 'active',
+          },
+          {
+            onSuccess: (created) => {
+              setNotes((prev) => prev.filter((n) => n.id !== noteId))
+              setSelectedNoteId(created.id)
+            },
+          }
+        )
+      }
     },
-    [mergedNotes]
+    [mergedNotes, apiNoteIds, updateMutation, createMutation]
+  )
+
+  const handleDeleteNote = useCallback(
+    (noteId: string) => {
+      const isFromApi = apiNoteIds.has(noteId)
+      if (isFromApi) {
+        deleteMutation.mutate(noteId, {
+          onSuccess: () => {
+            setNotes((prev) => prev.filter((n) => n.id !== noteId))
+            setSelectedNoteId((id) => (id === noteId ? null : id))
+          },
+        })
+      } else {
+        setNotes((prev) => prev.filter((n) => n.id !== noteId))
+        setSelectedNoteId((id) => (id === noteId ? null : id))
+        toast.success('Note removed')
+      }
+    },
+    [apiNoteIds, deleteMutation]
   )
 
   const handleAddSource = useCallback((noteId: string, url: string, title?: string) => {
@@ -196,7 +250,7 @@ export function ResearchPage() {
         tags: clip.tags,
         createdAt: new Date().toISOString(),
       }
-      setClips((prev) => [webClip, ...prev])
+      setSavedClips((prev) => [webClip, ...prev])
       const note: Note = {
         id: uuid(),
         userId: '',
@@ -255,11 +309,18 @@ export function ResearchPage() {
     <div className="space-y-6 animate-fade-in-up motion-reduce:animate-none">
       {apiError && (
         <div
-          role="status"
-          aria-live="polite"
-          className="rounded-lg border border-border bg-muted/30 px-4 py-2 text-sm text-muted-foreground"
+          role="alert"
+          className="rounded-lg border border-border bg-muted/30 px-4 py-3 text-sm text-muted-foreground flex flex-wrap items-center justify-between gap-2"
         >
-          Using local notes only. Connect the API to sync with your knowledge base.
+          <span>Using local notes only. Connect the API to sync with your knowledge base.</span>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => refetchNotes()}
+            className="shrink-0 transition-transform duration-200 hover:scale-[1.02]"
+          >
+            Retry connection
+          </Button>
         </div>
       )}
       <nav aria-label="Breadcrumb" className="flex items-center gap-1 text-sm text-muted-foreground">
@@ -321,6 +382,7 @@ export function ResearchPage() {
                 note={selectedNote}
                 isLoading={isLoading}
                 onSave={handleSaveNote}
+                onDelete={handleDeleteNote}
                 onAddSource={handleAddSource}
                 onRemoveSource={handleRemoveSource}
               />
@@ -341,10 +403,33 @@ export function ResearchPage() {
           </div>
         </TabsContent>
 
-        <TabsContent value="clipper" className="mt-6">
+        <TabsContent value="clipper" className="mt-6 space-y-6">
           <div className="max-w-xl">
             <WebClipperIntegration onSaveClip={handleSaveClip} isLoading={isLoading} />
           </div>
+          {savedClips.length > 0 && (
+            <Card className="max-w-xl border-primary/20 transition-all duration-300 hover:shadow-card-hover">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-base">Recently saved clips</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ul className="space-y-2" role="list">
+                  {savedClips.slice(0, 5).map((clip) => (
+                    <li key={clip.id}>
+                      <a
+                        href={clip.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm text-primary hover:underline line-clamp-1"
+                      >
+                        {clip.title || clip.url}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </CardContent>
+            </Card>
+          )}
         </TabsContent>
 
         <TabsContent value="compare" className="mt-6 space-y-4">
